@@ -1,0 +1,10 @@
+[
+  { "id": 1, "name": "Bulbasaur", "types": ["Grass", "Poison"] },
+  { "id": 4, "name": "Charmander", "types": ["Fire"] },
+  { "id": 7, "name": "Squirtle", "types": ["Water"] },
+  { "id": 25, "name": "Pikachu", "types": ["Electric"] },
+  { "id": 94, "name": "Gengar", "types": ["Ghost", "Poison"] },
+  { "id": 133, "name": "Eevee", "types": ["Normal"] },
+  { "id": 150, "name": "Mewtwo", "types": ["Psychic"] },
+  { "id": 448, "name": "Lucario", "types": ["Fighting", "Steel"] }
+]

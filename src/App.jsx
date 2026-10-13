@@ -1,12 +1,18 @@
-// נקודת ההתחלה של האפליקציה שלכם.
-// משימה 1 ב-tasks.md: רשימה מתוך קובץ JSON מקומי. בלי API בשלב הזה.
-// כל רכיב חדש בקובץ נפרד תחת src/components/.
+import items from './data/items.json'
+import PokemonList from './components/PokemonList.jsx'
 
+// Task 1: display local JSON data. No API calls or selected-item state yet.
 export default function App() {
   return (
     <main className="app">
-      <h1>הפרויקט שלי</h1>
-      <p>מתחילים ממשימה 1 ב-tasks.md.</p>
+      <header className="app-header">
+        <p className="eyebrow">YOUR DIGITAL POKÉDEX</p>
+        <h1>PokéDex Explorer</h1>
+        <p className="intro">
+          Discover Pokémon from every generation. This first version uses local sample data.
+        </p>
+      </header>
+      <PokemonList pokemon={items} />
     </main>
   )
 }

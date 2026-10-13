@@ -1,35 +1,37 @@
-# PRD — <שם האפליקציה>
+# PRD — PokéDex Explorer
 
-> עמוד אחד. בלי קוד. אפשר לכתוב אותו בעזרת צ'אטבוט (ראו סעיף 5 בדף השיעור).
+> אפיון קצר לפי תבנית המרצה; פרויקט Frontend בלבד ב-React + Vite.
 
 ## 1. Pitch
-משפט אחד: מה האפליקציה עושה, ולמי.
+פוקדקס אינטראקטיבי שמאפשר לחובבי פוקימון לגלות יצורים, לסנן אותם וללמוד על כל אחד מהם.
 
 ## 2. Who it is for
-מי המשתמש, ומה הוא רוצה להשיג.
+חובבי פוקימון שרוצים למצוא פוקימון לפי שם, מספר או סוג, לקרוא נתונים ולהחזיק רשימת מועדפים בדפדפן.
 
 ## 3. Screens
-- **List** — מה מוצג בכל שורה ברשימה.
-- **Details** — מה מוצג על הפריט שנבחר.
+- **List** — כרטיסי פוקימונים עם מספר, תמונה, שם וסוג; חיפוש, סינון ומיון.
+- **Details** — מידע על הפוקימון שנבחר: תמונה, סוגים, גובה, משקל, יכולות, סטטיסטיקות ושרשרת התפתחות. עיצוב עם תחושת עומק (CSS בלבד), לא מודל 3D.
 
 ## 4. Must-have features
-עד 5. מה שלא נכנס לכאן — לא בונים עכשיו.
-
-1.
-2.
-3.
+1. רשימת פוקימונים שמגיעה מ-PokéAPI, עם טעינה, שגיאה ומצב ללא תוצאות.
+2. בחירה בכרטיס והצגת פרטים באמצעות `useState` ברכיב האב והעברת `props`.
+3. חיפוש לפי שם/מספר, סינון לפי סוג ומיון לפי שם/מספר.
+4. סימון מועדפים ושמירתם ב-`localStorage`.
+5. ממשק רספונסיבי עם תמונות רשמיות ואפקטי עומק עדינים ב-CSS במסך הפרטים.
 
 ## 5. Acceptance criteria
-3–5 שורות שאפשר לבדוק בעיניים.
-
-- When I ..., I see ...
-- When I ..., I see ...
-- When I ..., I see ...
+- When I open the app, I see a populated Pokémon list; loading and network errors are handled visibly.
+- When I select a Pokémon, I see its details, stats and evolution information.
+- When I search, filter or sort, I see the corresponding results or an empty-state message.
+- When I mark a favorite and refresh, it remains saved on the same browser.
+- When I view the app on a phone, the layout stays readable and usable.
 
 ## 6. Not now
-רעיונות טובים שנשארים לגרסה הבאה.
+חשבון משתמש, Backend, מסד נתונים, מודלים תלת־ממדיים מלאים, React Router, Redux, TypeScript וספריות UI.
 
 ## 7. Data
-- **API:** `https://...`
-- **שדות ברשימה:**
-- **שדות בפרטים:**
+- **API:** `https://pokeapi.co/api/v2/`
+- **Endpoints:** `pokemon`, `pokemon-species`, `evolution-chain`, `type` (לפי הצורך).
+- **שדות ברשימה:** `id`, `name`, `sprites`, `types`.
+- **שדות בפרטים:** `height`, `weight`, `abilities`, `stats`, `species`, `evolution_chain`.
+- **משימה 1 בלבד:** קובץ מקומי `src/data/items.json`; API יתווסף במשימה 3.
