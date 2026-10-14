@@ -1,7 +1,37 @@
 {
-  "description": "Log every prompt to PROMPTS.md",
+  "description": "Append complete user messages and visible Codex replies to PROMPTS.md",
   "hooks": {
     "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./scripts/log-prompt.mjs codex"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./scripts/log-prompt.mjs codex"
+          }
+        ]
+      }
+    ],
+    "Interrupt": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./scripts/log-prompt.mjs codex"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
       {
         "hooks": [
           {

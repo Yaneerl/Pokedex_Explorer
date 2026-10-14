@@ -1,36 +1,41 @@
 import { useEffect, useMemo, useState } from 'react'
-import PokemonList from './components/PokemonList.jsx'
-import PokemonDetails from './components/PokemonDetails.jsx'
-import PokemonFilters from './components/PokemonFilters.jsx'
-import PokemonPagination from './components/PokemonPagination.jsx'
-import usePokemonClassification from './hooks/usePokemonClassification.js'
+import PokemonList from './components/PokemonList.tsx'
+import PokemonDetails from './components/PokemonDetails.tsx'
+import PokemonFilters from './components/PokemonFilters.tsx'
+import PokemonPagination from './components/PokemonPagination.tsx'
+import usePokemonClassification from './hooks/usePokemonClassification.ts'
+import type {
+  ClassificationFilter, GenerationFilter, GenerationResults, Pokemon,
+  PokemonGenerationResponse, PokemonResponse, PokemonSummary, PokemonTypeResponse,
+  SortOrder, SpeciesIndexResponse, TypeFilter, TypeResults,
+} from './types/pokemon.ts'
 
 const PAGE_SIZE = 20
 const API_URL = 'https://pokeapi.co/api/v2'
-function getPokemonId(url) {
+function getPokemonId(url: string): number {
   const parts = url.split('/').filter(Boolean)
   return Number(parts[parts.length - 1])
 }
 
 export default function App() {
-  const [speciesIndex, setSpeciesIndex] = useState([])
-  const [pokemonList, setPokemonList] = useState([])
-  const [selectedPokemon, setSelectedPokemon] = useState(null)
+  const [speciesIndex, setSpeciesIndex] = useState<PokemonSummary[]>([])
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>([])
+  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null)
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [selectedType, setSelectedType] = useState('all')
-  const [selectedGeneration, setSelectedGeneration] = useState('all')
-  const [selectedClassification, setSelectedClassification] = useState('all')
-  const [sortBy, setSortBy] = useState('id-asc')
+  const [selectedType, setSelectedType] = useState<TypeFilter>('all')
+  const [selectedGeneration, setSelectedGeneration] = useState<GenerationFilter>('all')
+  const [selectedClassification, setSelectedClassification] = useState<ClassificationFilter>('all')
+  const [sortBy, setSortBy] = useState<SortOrder>('id-asc')
   const [page, setPage] = useState(1)
 
-  const [typeResults, setTypeResults] = useState({
+  const [typeResults, setTypeResults] = useState<TypeResults>({
     type: 'all',
     ids: new Set(),
   })
 
-  const [generationResults, setGenerationResults] = useState({
+  const [generationResults, setGenerationResults] = useState<GenerationResults>({
     generation: 'all',
     ids: new Set(),
   })
@@ -45,10 +50,10 @@ export default function App() {
   const [indexLoading, setIndexLoading] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  const [indexError, setIndexError] = useState(null)
-  const [typeError, setTypeError] = useState(null)
-  const [generationError, setGenerationError] = useState(null)
-  const [error, setError] = useState(null)
+  const [indexError, setIndexError] = useState<string | null>(null)
+  const [typeError, setTypeError] = useState<string | null>(null)
+  const [generationError, setGenerationError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   // Wait 300ms after the last keystroke before filtering.
   useEffect(() => {
@@ -62,7 +67,7 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController()
 
-    async function loadSpeciesIndex() {
+    async function loadSpeciesIndex(): Promise<void> {
       try {
         const response = await fetch(
           `${API_URL}/pokemon-species?limit=2000&offset=0`,
@@ -70,14 +75,16 @@ export default function App() {
         )
         if (!response.ok) throw new Error('Failed to load Pokémon index')
 
-        const data = await response.json()
+        const data: SpeciesIndexResponse = await response.json()
         const species = data.results
           .map((item) => ({ id: getPokemonId(item.url), name: item.name }))
           .sort((a, b) => a.id - b.id)
 
         if (!controller.signal.aborted) setSpeciesIndex(species)
       } catch (err) {
-        if (!controller.signal.aborted) setIndexError(err.message)
+        if (!controller.signal.aborted) {
+          setIndexError(err instanceof Error ? err.message : 'Failed to load Pokémon index')
+        }
       } finally {
         if (!controller.signal.aborted) setIndexLoading(false)
       }
@@ -91,14 +98,14 @@ export default function App() {
     if (selectedType === 'all') return
     const controller = new AbortController()
 
-    async function loadType() {
+    async function loadType(): Promise<void> {
       try {
         const response = await fetch(`${API_URL}/type/${selectedType}`, {
           signal: controller.signal,
         })
         if (!response.ok) throw new Error('Failed to load Pokémon type')
 
-        const data = await response.json()
+        const data: PokemonTypeResponse = await response.json()
         const ids = new Set(
           data.pokemon.map((entry) => getPokemonId(entry.pokemon.url))
         )
@@ -107,7 +114,9 @@ export default function App() {
           setTypeResults({ type: selectedType, ids })
         }
       } catch (err) {
-        if (!controller.signal.aborted) setTypeError(err.message)
+        if (!controller.signal.aborted) {
+          setTypeError(err instanceof Error ? err.message : 'Failed to load Pokémon type')
+        }
       }
     }
 
@@ -119,7 +128,7 @@ export default function App() {
     if (selectedGeneration === 'all') return
     const controller = new AbortController()
 
-    async function loadGeneration() {
+    async function loadGeneration(): Promise<void> {
       try {
         const response = await fetch(
           `${API_URL}/generation/${selectedGeneration}`,
@@ -129,7 +138,7 @@ export default function App() {
           throw new Error('Failed to load Pokémon generation')
         }
 
-        const data = await response.json()
+        const data: PokemonGenerationResponse = await response.json()
         const ids = new Set(
           data.pokemon_species.map((item) => getPokemonId(item.url))
         )
@@ -138,7 +147,9 @@ export default function App() {
           setGenerationResults({ generation: selectedGeneration, ids })
         }
       } catch (err) {
-        if (!controller.signal.aborted) setGenerationError(err.message)
+        if (!controller.signal.aborted) {
+          setGenerationError(err instanceof Error ? err.message : 'Failed to load Pokémon generation')
+        }
       }
     }
 
@@ -156,7 +167,7 @@ export default function App() {
   const classificationReady =
     selectedClassification === 'all' || classificationData.loaded
 
-  const filteredSpecies = useMemo(() => {
+  const filteredSpecies = useMemo<PokemonSummary[]>(() => {
     let results = speciesIndex
 
     if (selectedType !== 'all') {
@@ -235,7 +246,7 @@ export default function App() {
 
     const controller = new AbortController()
 
-    async function loadPokemon() {
+    async function loadPokemon(): Promise<void> {
       setLoading(true)
       setError(null)
 
@@ -243,7 +254,7 @@ export default function App() {
         const offset = (page - 1) * PAGE_SIZE
         const pageSpecies = filteredSpecies.slice(offset, offset + PAGE_SIZE)
         const results = await Promise.all(
-          pageSpecies.map(async (item) => {
+          pageSpecies.map(async (item): Promise<Pokemon> => {
             const response = await fetch(`${API_URL}/pokemon/${item.id}`, {
               signal: controller.signal,
             })
@@ -251,7 +262,7 @@ export default function App() {
               throw new Error('Failed to load Pokémon details')
             }
 
-            const data = await response.json()
+            const data: PokemonResponse = await response.json()
             return {
               id: data.id,
               name: data.name,
@@ -265,7 +276,9 @@ export default function App() {
 
         if (!controller.signal.aborted) setPokemonList(results)
       } catch (err) {
-        if (!controller.signal.aborted) setError(err.message)
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Failed to load Pokémon details')
+        }
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -279,38 +292,38 @@ export default function App() {
     generationError, classificationError,
   ])
 
-  function handleSearchChange(value) {
+  function handleSearchChange(value: string): void {
     setSearch(value)
     setPage(1)
   }
 
-  function handleTypeChange(value) {
+  function handleTypeChange(value: TypeFilter): void {
     setSelectedType(value)
     setTypeError(null)
     setError(null)
     setPage(1)
   }
 
-  function handleGenerationChange(value) {
+  function handleGenerationChange(value: GenerationFilter): void {
     setSelectedGeneration(value)
     setGenerationError(null)
     setError(null)
     setPage(1)
   }
 
-  function handleClassificationChange(value) {
+  function handleClassificationChange(value: ClassificationFilter): void {
     setSelectedClassification(value)
     clearClassificationError()
     setError(null)
     setPage(1)
   }
 
-  function handleSortChange(value) {
+  function handleSortChange(value: SortOrder): void {
     setSortBy(value)
     setPage(1)
   }
 
-  function resetFilters() {
+  function resetFilters(): void {
     setSearch('')
     setDebouncedSearch('')
     setSelectedType('all')
@@ -335,7 +348,7 @@ export default function App() {
   const pageDataReady =
     pokemonList.length === currentPageSpecies.length &&
     pokemonList.every(
-      (pokemon, index) => pokemon.id === currentPageSpecies[index].id
+      (pokemon, index) => pokemon.id === currentPageSpecies[index]?.id
     )
 
   const isLoading =

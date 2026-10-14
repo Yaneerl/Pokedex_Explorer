@@ -1,11 +1,21 @@
-const POKEMON_TYPES = [
-  'normal', 'fire', 'water', 'electric', 'grass',
-  'ice', 'fighting', 'poison', 'ground', 'flying',
-  'psychic', 'bug', 'rock', 'ghost', 'dragon',
-  'dark', 'steel', 'fairy',
-]
+import { GENERATIONS, POKEMON_TYPES } from '../types/pokemon.ts'
+import type {
+  ClassificationFilter, GenerationFilter, SortOrder, TypeFilter,
+} from '../types/pokemon.ts'
 
-const GENERATIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+interface PokemonFiltersProps {
+  search: string
+  selectedType: TypeFilter
+  selectedGeneration: GenerationFilter
+  selectedClassification: ClassificationFilter
+  sortBy: SortOrder
+  onSearchChange: (value: string) => void
+  onTypeChange: (value: TypeFilter) => void
+  onGenerationChange: (value: GenerationFilter) => void
+  onClassificationChange: (value: ClassificationFilter) => void
+  onSortChange: (value: SortOrder) => void
+  onReset: () => void
+}
 
 export default function PokemonFilters({
   search,
@@ -19,7 +29,7 @@ export default function PokemonFilters({
   onClassificationChange,
   onSortChange,
   onReset,
-}) {
+}: PokemonFiltersProps) {
   const hasFilters =
     search.trim() !== '' ||
     selectedType !== 'all' ||
@@ -45,7 +55,7 @@ export default function PokemonFilters({
         <select
           id="pokemon-type"
           value={selectedType}
-          onChange={(event) => onTypeChange(event.target.value)}
+          onChange={(event) => onTypeChange(event.target.value as TypeFilter)}
         >
           <option value="all">All Types</option>
           {POKEMON_TYPES.map((type) => (
@@ -61,7 +71,7 @@ export default function PokemonFilters({
         <select
           id="pokemon-generation"
           value={selectedGeneration}
-          onChange={(event) => onGenerationChange(event.target.value)}
+          onChange={(event) => onGenerationChange(event.target.value as GenerationFilter)}
         >
           <option value="all">All Generations</option>
           {GENERATIONS.map((generation) => (
@@ -77,7 +87,7 @@ export default function PokemonFilters({
         <select
           id="pokemon-classification"
           value={selectedClassification}
-          onChange={(event) => onClassificationChange(event.target.value)}
+          onChange={(event) => onClassificationChange(event.target.value as ClassificationFilter)}
         >
           <option value="all">All Pokémon</option>
           <option value="regular">Regular (not Legendary/Mythical)</option>
@@ -91,7 +101,7 @@ export default function PokemonFilters({
         <select
           id="pokemon-sort"
           value={sortBy}
-          onChange={(event) => onSortChange(event.target.value)}
+          onChange={(event) => onSortChange(event.target.value as SortOrder)}
         >
           <option value="id-asc">Pokédex Number: Low to High</option>
           <option value="id-desc">Pokédex Number: High to Low</option>

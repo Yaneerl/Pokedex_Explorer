@@ -1,5 +1,12 @@
 
-export default function PokemonCard({ pokemon, onSelect }) {
+import type { Pokemon } from '../types/pokemon.ts'
+
+interface PokemonCardProps {
+  pokemon: Pokemon
+  onSelect: (pokemon: Pokemon) => void
+}
+
+export default function PokemonCard({ pokemon, onSelect }: PokemonCardProps) {
   return (
     <li
       className="pokemon-card"

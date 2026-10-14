@@ -1,10 +1,17 @@
 
+interface PokemonPaginationProps {
+  page: number
+  totalPages: number
+  onPrevious: () => void
+  onNext: () => void
+}
+
 export default function PokemonPagination({
   page,
   totalPages,
   onPrevious,
   onNext,
-}) {
+}: PokemonPaginationProps) {
   if (totalPages <= 1) {
     return null
   }

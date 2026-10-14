@@ -1,5 +1,12 @@
 
-export default function PokemonDetails({ pokemon, onBack }) {
+import type { Pokemon } from '../types/pokemon.ts'
+
+interface PokemonDetailsProps {
+  pokemon: Pokemon | null
+  onBack: () => void
+}
+
+export default function PokemonDetails({ pokemon, onBack }: PokemonDetailsProps) {
   if (!pokemon) {
     return (
       <aside className="pokemon-details">

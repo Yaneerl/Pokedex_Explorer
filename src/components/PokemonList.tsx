@@ -1,6 +1,13 @@
-import PokemonCard from './PokemonCard.jsx'
+import PokemonCard from './PokemonCard.tsx'
 
-export default function PokemonList({ pokemon, onSelect }) {
+import type { Pokemon } from '../types/pokemon.ts'
+
+interface PokemonListProps {
+  pokemon: Pokemon[]
+  onSelect: (pokemon: Pokemon) => void
+}
+
+export default function PokemonList({ pokemon, onSelect }: PokemonListProps) {
   return (
     <section aria-labelledby="pokemon-heading">
       <div className="list-heading">

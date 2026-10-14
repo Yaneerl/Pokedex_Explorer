@@ -1,5 +1,13 @@
 
 import { useEffect, useState } from 'react'
+import type { ClassificationData, ClassificationResponse } from '../types/pokemon.ts'
+
+interface PokemonClassificationResult {
+  classificationData: ClassificationData
+  classificationLoading: boolean
+  classificationError: string | null
+  clearClassificationError: () => void
+}
 
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
 
@@ -22,8 +30,8 @@ const CLASSIFICATION_QUERY = `
   }
 `
 
-export default function usePokemonClassification(enabled) {
-  const [classificationData, setClassificationData] = useState({
+export default function usePokemonClassification(enabled: boolean): PokemonClassificationResult {
+  const [classificationData, setClassificationData] = useState<ClassificationData>({
     loaded: false,
     legendaryIds: new Set(),
     mythicalIds: new Set(),
@@ -33,14 +41,14 @@ export default function usePokemonClassification(enabled) {
     useState(false)
 
   const [classificationError, setClassificationError] =
-    useState(null)
+    useState<string | null>(null)
 
   useEffect(() => {
     if (!enabled || classificationData.loaded) return
 
     const controller = new AbortController()
 
-    async function loadClassifications() {
+    async function loadClassifications(): Promise<void> {
       setClassificationLoading(true)
       setClassificationError(null)
 
@@ -62,7 +70,7 @@ export default function usePokemonClassification(enabled) {
           )
         }
 
-        const payload = await response.json()
+        const payload: ClassificationResponse = await response.json()
 
         const species =
           payload.data?.pokemon_v2_pokemonspecies
@@ -98,7 +106,9 @@ export default function usePokemonClassification(enabled) {
         }
       } catch (err) {
         if (!controller.signal.aborted) {
-          setClassificationError(err.message)
+          setClassificationError(
+            err instanceof Error ? err.message : 'Failed to load Pokémon classifications'
+          )
         }
       } finally {
         if (!controller.signal.aborted) {
