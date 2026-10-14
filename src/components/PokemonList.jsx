@@ -1,6 +1,6 @@
 import PokemonCard from './PokemonCard.jsx'
 
-export default function PokemonList({ pokemon }) {
+export default function PokemonList({ pokemon, onSelect }) {
   return (
     <section aria-labelledby="pokemon-heading">
       <div className="list-heading">
@@ -9,7 +9,11 @@ export default function PokemonList({ pokemon }) {
       </div>
       <ul className="pokemon-grid">
         {pokemon.map((item) => (
-          <PokemonCard key={item.id} pokemon={item} />
+          <PokemonCard
+            key={item.id}
+            pokemon={item}
+            onSelect={onSelect}
+          />
         ))}
       </ul>
     </section>
