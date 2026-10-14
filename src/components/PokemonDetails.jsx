@@ -15,7 +15,19 @@ export default function PokemonDetails({ pokemon, onBack }) {
         ← Back to Pokédex
       </button>
 
-      <h2>{pokemon.name}</h2>
+      <h2>
+        {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+      </h2>
+
+      {pokemon.image && (
+        <img
+          src={pokemon.image}
+          alt={`${pokemon.name} official artwork`}
+          width="220"
+          height="220"
+          style={{ objectFit: 'contain' }}
+        />
+      )}
 
       <p>
         Pokédex Number: #{String(pokemon.id).padStart(4, '0')}
