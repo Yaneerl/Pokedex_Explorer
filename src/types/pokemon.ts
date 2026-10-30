@@ -46,6 +46,7 @@ export interface PokemonAbility {
 }
 
 export interface PokemonDetailsData extends PokemonWithStats {
+  speciesUrl: string
   heightMeters: number
   weightKg: number
   abilities: PokemonAbility[]
@@ -81,6 +82,7 @@ export interface PokemonGenerationResponse {
 }
 
 export interface PokemonResponse extends PokemonSummary {
+  species: NamedApiResource
   height: number // Decimeters, as returned by PokeAPI.
   weight: number // Hectograms, as returned by PokeAPI.
   abilities: PokemonAbilityResponse[]
@@ -119,4 +121,26 @@ export interface TypeResults {
 export interface GenerationResults {
   generation: GenerationFilter
   ids: Set<number>
+}
+
+export interface PokemonSpeciesResponse {
+  evolution_chain: { url: string } | null
+}
+
+export interface EvolutionChainLink {
+  species: NamedApiResource
+  evolves_to: EvolutionChainLink[]
+}
+
+export interface EvolutionChainResponse {
+  chain: EvolutionChainLink
+}
+
+export interface EvolutionNode extends PokemonSummary {
+  children: EvolutionNode[]
+}
+
+export interface EvolutionStage extends PokemonSummary {
+  image: string | null
+  children: EvolutionStage[]
 }

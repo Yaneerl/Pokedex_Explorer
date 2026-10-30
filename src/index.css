@@ -49,3 +49,26 @@ h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.055
 .pokemon-measurement { padding: 12px; border: 1px solid #e7edf4; border-radius: 8px; background: white; }
 .pokemon-measurement dt { color: #64748b; font-size: 14px; }
 .pokemon-measurement dd { margin: 6px 0 0; font-weight: 600; }
+
+.pokemon-evolution { margin-top: 28px; }
+.pokemon-evolution h3 { margin: 0 0 16px; font-size: 20px; }
+.pokemon-evolution-tree, .pokemon-evolution-branches { margin: 0; padding: 0; list-style: none; }
+.pokemon-evolution-node, .pokemon-evolution-connection { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pokemon-evolution-branches { position: relative; display: flex; flex-direction: column; padding-left: 12px; }
+.pokemon-evolution-branches::before { content: ''; position: absolute; right: 100%; top: 50%; width: 12px; border-top: 1px solid #cbd5e1; }
+.pokemon-evolution-branches > .pokemon-evolution-node { position: relative; padding: 8px 0; }
+.pokemon-evolution-branches > .pokemon-evolution-node::before { content: ''; position: absolute; left: -12px; top: 0; bottom: 0; border-left: 1px solid #cbd5e1; }
+.pokemon-evolution-branches > .pokemon-evolution-node:first-child::before { top: 50%; }
+.pokemon-evolution-branches > .pokemon-evolution-node:last-child::before { bottom: 50%; }
+.pokemon-evolution-branches > .pokemon-evolution-node::after { content: ''; position: absolute; left: -12px; top: 50%; width: 12px; border-top: 1px solid #cbd5e1; }
+.pokemon-evolution-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 0 0 128px; width: 128px; min-height: 134px; padding: 12px; border: 1px solid #e7edf4; border-radius: 8px; color: inherit; background: white; text-align: center; text-decoration: none; font-size: 14px; }
+.pokemon-evolution-card img { display: block; object-fit: contain; }
+.pokemon-evolution-card:focus-visible { outline: 2px solid #475569; outline-offset: 3px; }
+.pokemon-evolution-arrow { flex-shrink: 0; color: #64748b; font-size: 24px; }
+.pokemon-evolution-placeholder { display: grid; place-items: center; width: 80px; height: 80px; color: #64748b; font-size: 12px; }
+@media (max-width: 580px) {
+  .pokemon-evolution-connection { flex-direction: column; align-items: flex-start; }
+  .pokemon-evolution-branches { margin-left: 12px; }
+  .pokemon-evolution-branches::before { left: 0; right: auto; top: -12px; width: 0; height: calc(50% + 12px); border-top: 0; border-left: 1px solid #cbd5e1; }
+  .pokemon-evolution-card { flex-basis: auto; }
+}
