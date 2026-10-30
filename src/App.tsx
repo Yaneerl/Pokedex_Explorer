@@ -6,6 +6,7 @@ import PokemonFilters from './components/PokemonFilters.tsx'
 import PokemonPagination from './components/PokemonPagination.tsx'
 import usePokemonClassification from './hooks/usePokemonClassification.ts'
 import searchPokemon from './utils/searchPokemon.ts'
+import { filterPokemonByGeneration, filterPokemonByType } from './utils/filterPokemon.ts'
 import type {
   ClassificationFilter, GenerationFilter, GenerationResults, Pokemon,
   PokemonGenerationResponse, PokemonResponse, PokemonSummary, PokemonTypeResponse,
@@ -170,19 +171,8 @@ export default function App() {
     selectedClassification === 'all' || classificationData.loaded
 
   const filteredSpecies = useMemo<PokemonSummary[]>(() => {
-    let results = speciesIndex
-
-    if (selectedType !== 'all') {
-      if (!typeReady) return []
-      results = results.filter((pokemon) => typeResults.ids.has(pokemon.id))
-    }
-
-    if (selectedGeneration !== 'all') {
-      if (!generationReady) return []
-      results = results.filter((pokemon) =>
-        generationResults.ids.has(pokemon.id)
-      )
-    }
+    let results = filterPokemonByType(speciesIndex, selectedType, typeResults)
+    results = filterPokemonByGeneration(results, selectedGeneration, generationResults)
 
     if (selectedClassification !== 'all') {
       if (!classificationReady) return []
@@ -223,8 +213,6 @@ export default function App() {
     typeResults,
     generationResults,
     classificationData,
-    typeReady,
-    generationReady,
     classificationReady,
   ])
 
