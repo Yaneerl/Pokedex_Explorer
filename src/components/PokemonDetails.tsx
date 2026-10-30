@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import type { PokemonResponse, PokemonDetailsData } from '../types/pokemon.ts'
 import PokemonStats from './PokemonStats.tsx'
 import PokemonAbilities from './PokemonAbilities.tsx'
+import { decimetersToMeters, hectogramsToKilograms } from '../utils/convertPokemonMeasurements.ts'
 
 interface PokemonDetailsState {
   id: string
@@ -33,6 +34,8 @@ export default function PokemonDetails() {
         const pokemon: PokemonDetailsData = {
           id: data.id,
           name: data.name,
+          heightMeters: decimetersToMeters(data.height),
+          weightKg: hectogramsToKilograms(data.weight),
           abilities: data.abilities.map((entry) => ({
             name: entry.ability.name,
             isHidden: entry.is_hidden,
@@ -102,6 +105,17 @@ export default function PokemonDetails() {
           </p>
 
           <p>Types: {pokemon.types.join(', ')}</p>
+
+          <dl className="pokemon-measurements" aria-label="Height and weight">
+            <div className="pokemon-measurement">
+              <dt>Height</dt>
+              <dd>{pokemon.heightMeters.toFixed(1)} m</dd>
+            </div>
+            <div className="pokemon-measurement">
+              <dt>Weight</dt>
+              <dd>{pokemon.weightKg.toFixed(1)} kg</dd>
+            </div>
+          </dl>
 
           <PokemonStats stats={pokemon.stats} />
           <PokemonAbilities abilities={pokemon.abilities} />

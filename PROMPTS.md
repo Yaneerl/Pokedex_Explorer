@@ -1146,3 +1146,56 @@
 > כל **12 בדיקות Vitest**, Typecheck, Lint, Build ו־`git diff --check` עברו, וכן 22 בדיקות דפדפן מול PokéAPI, כולל מחשב ומובייל.
 >
 > ב־`tasks.md` עודכן רק סעיף Abilities והמשימה הכוללת נשארה פתוחה, התיעוד האוטומטי ב־`PROMPTS.md` אומת ולא בוצעו Commit או Push — התוצאה זמינה [לבדיקה בדפדפן](http://127.0.0.1:5173/pokemon/25).
+
+**13:00 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+>
+>
+> השלמנו את הסטטיסטיקות ואת ה-Abilities, וכל השינויים נשמרו ב-GitHub.
+>
+> כעת אני רוצה להוסיף למסך פרטי הפוקימון רק גובה (Height) ומשקל (Weight).
+>
+> דרישות:
+>
+> 1. השתמש בנתונים האמיתיים שכבר מגיעים מ-PokéAPI.
+> 2. הצג גובה במטרים (m) ומשקל בקילוגרמים (kg), עם המרה נכונה מהיחידות של ה-API.
+> 3. צור אזור תצוגה בסיסי, נקי וקריא, שמתאים למבנה הקיים.
+> 4. השתמש ב-TypeScript ללא any.
+> 5. שמור על כל הפונקציונליות הקיימת.
+> 6. הוסף בדיקות Vitest להמרת היחידות.
+> 7. עדכן רק את הסעיף המתאים ב-tasks.md, בלי לסמן את כל משימה 7 כהושלמה.
+> 8. ודא שהתיעוד האוטומטי ב-PROMPTS.md ממשיך לפעול.
+>
+> הרץ Vitest, Typecheck, Lint, Build ו-git diff --check.
+>
+> אל תוסיף כרגע Evolution Chain, Shiny או עיצוב מתקדם.
+>
+> אל תבצע Commit או Push. אני רוצה לבדוק את התוצאה בדפדפן לפני האישור.
+>
+
+**13:00 · codex · assistant**
+
+> אוסיף גובה ומשקל מתוך תגובת הפרטים הקיימת, עם המרה למטרים ולקילוגרמים ובדיקות לפונקציות ההמרה. אשמור על תצוגה בסיסית, אעדכן רק את הסעיף המתאים ב־`tasks.md` ואשאיר את המשימה הכוללת פתוחה, ללא Commit או Push.
+>
+
+**13:02 · codex · assistant**
+
+> לפי תיעוד PokéAPI, הגובה מגיע בדצימטרים והמשקל בהקטוגרמים, ולכן שתי ההמרות מחלקות ב־10. נוספו שש בדיקות המרה, וכל 18 בדיקות Vitest וגם Typecheck, Lint ו־Build עברו; כעת אני בודק בדפדפן שהערכים והיחידות מוצגים נכון לצד הסטטיסטיקות והיכולות.
+>
+
+**13:03 · codex · assistant**
+
+> נוספו גובה במטרים ומשקל בקילוגרמים, עם חלוקה ב־10 בהתאם ל[יחידות PokéAPI](https://pokeapi.co/docs/v2#pokemon); נוספו [פונקציות ההמרה](/C:/Users/user/Pokedex_Explorer/src/utils/convertPokemonMeasurements.ts) ו־[בדיקותיהן](/C:/Users/user/Pokedex_Explorer/src/utils/convertPokemonMeasurements.test.ts), ועודכנו `PokemonDetails.tsx`, `src/types/pokemon.ts` ו־`src/index.css`.
+>
+> כל **18 בדיקות Vitest**, Typecheck, Lint, Build ו־`git diff --check` עברו, וכן 26 בדיקות דפדפן מול PokéAPI, כולל מחשב ומובייל.
+>
+> ב־`tasks.md` עודכן רק סעיף Height/Weight והמשימה הכוללת נשארה פתוחה, התיעוד האוטומטי ב־`PROMPTS.md` אומת ולא בוצעו Commit או Push — התוצאה זמינה [לבדיקה בדפדפן](http://127.0.0.1:5173/pokemon/25).

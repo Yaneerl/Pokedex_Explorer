@@ -46,6 +46,8 @@ export interface PokemonAbility {
 }
 
 export interface PokemonDetailsData extends PokemonWithStats {
+  heightMeters: number
+  weightKg: number
   abilities: PokemonAbility[]
 }
 
@@ -79,6 +81,8 @@ export interface PokemonGenerationResponse {
 }
 
 export interface PokemonResponse extends PokemonSummary {
+  height: number // Decimeters, as returned by PokeAPI.
+  weight: number // Hectograms, as returned by PokeAPI.
   abilities: PokemonAbilityResponse[]
   stats: PokemonStatResponse[]
   types: { type: NamedApiResource }[]
