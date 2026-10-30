@@ -46,6 +46,7 @@ export interface PokemonAbility {
 }
 
 export interface PokemonDetailsData extends PokemonWithStats {
+  shinyImage: string | null
   speciesUrl: string
   heightMeters: number
   weightKg: number
@@ -90,8 +91,9 @@ export interface PokemonResponse extends PokemonSummary {
   types: { type: NamedApiResource }[]
   sprites: {
     front_default: string | null
+    front_shiny: string | null
     other?: {
-      'official-artwork'?: { front_default: string | null }
+      'official-artwork'?: { front_default: string | null; front_shiny: string | null }
     }
   }
 }

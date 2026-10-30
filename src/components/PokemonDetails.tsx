@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import type { PokemonResponse, PokemonDetailsData } from '../types/pokemon.ts'
 import PokemonStats from './PokemonStats.tsx'
+import PokemonArtwork from './PokemonArtwork.tsx'
 import PokemonAbilities from './PokemonAbilities.tsx'
 import PokemonEvolution from './PokemonEvolution.tsx'
 import { decimetersToMeters, hectogramsToKilograms } from '../utils/convertPokemonMeasurements.ts'
@@ -48,6 +49,9 @@ export default function PokemonDetails() {
             value: entry.base_stat,
           })),
           types: data.types.map((entry) => entry.type.name),
+          shinyImage:
+            data.sprites.other?.['official-artwork']?.front_shiny ??
+            data.sprites.front_shiny ?? null,
           image:
             data.sprites.other?.['official-artwork']?.front_default ??
             data.sprites.front_default,
@@ -92,15 +96,12 @@ export default function PokemonDetails() {
             {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
           </h2>
 
-          {pokemon.image && (
-            <img
-              src={pokemon.image}
-              alt={pokemon.name + ' official artwork'}
-              width="220"
-              height="220"
-              style={{ objectFit: 'contain' }}
-            />
-          )}
+          <PokemonArtwork
+            key={pokemon.id}
+            name={pokemon.name}
+            image={pokemon.image}
+            shinyImage={pokemon.shinyImage}
+          />
 
           <p>
             Pokédex Number: #{String(pokemon.id).padStart(4, '0')}
