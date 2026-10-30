@@ -634,3 +634,101 @@
 > Typecheck, Lint, Build ו־`git diff --check` עברו, וכן 40 בדיקות דפדפן מבוקרות ו־10 בדיקות נוספות מול PokéAPI החי בבניית הייצור, כולל בדיקת הפיצ׳רים הקיימים.
 >
 > משימה 6 ב־[tasks.md](/C:/Users/user/Pokedex_Explorer/tasks.md) סומנה כהושלמה והמשימות הבאות מוספרו מחדש ללא מחיקתן; התיעוד האוטומטי אומת, ולא בוצעו Commit או Push.
+
+**11:47 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Active file: tasks.md
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+> אנחנו ממשיכים בפרויקט PokéDex Explorer, שכבר בנוי ב-React + Vite + TypeScript.
+>
+> אני רוצה להתחיל לממש את דרישת Vitest לפי הנחיות המרצה.
+>
+> חשוב: אנחנו עובדים בהדרגה, עם Commit נפרד לכל תוספת משמעותית.
+>
+> **המשימה הנוכחית — הגדרת Vitest**
+>
+> 1. בדוק את package.json ואת הגדרות הפרויקט הקיימות.
+> 2. התקן והגדר Vitest בצורה התואמת ל-React + TypeScript ולגרסאות המותקנות.
+> 3. התקן React Testing Library ו-jsdom אם הם נחוצים לבדיקת רכיבים.
+> 4. הוסף סקריפטים ל-package.json להרצת הבדיקות.
+> 5. כתוב בדיקה אחת משמעותית לרכיב קיים, למשל PokemonPagination. הבדיקה צריכה לבדוק התנהגות אמיתית של הרכיב, ולא בדיקת דוגמה כמו 1+1.
+> 6. שמור על כל הפונקציונליות הקיימת, כולל React Router.
+> 7. עדכן את tasks.md עם שלב הגדרת Vitest. אל תסמן את דרישת חמש הבדיקות כהושלמה, כי כרגע אנחנו מוסיפים רק בדיקה אחת.
+> 8. ודא שהתיעוד האוטומטי ב-PROMPTS.md ממשיך לעבוד.
+>
+> **בדיקות סופיות:**
+>
+> - הרץ את בדיקת Vitest החדשה וודא שהיא עוברת.
+> - הרץ Typecheck, Lint ו-Build.
+> - הרץ git diff --check.
+> - תקן שגיאות אם מתגלות.
+>
+> בסיום הצג לי אילו קבצים השתנו, מה הבדיקה בודקת ומה תוצאות כל הבדיקות.
+>
+> אל תוסיף כרגע עוד ארבע בדיקות, אל תוסיף פיצ'רים חדשים ואל תשנה את עיצוב האתר.
+>
+> **אל תבצע Commit או Push.** אני רוצה לבדוק את התוצאה ולאשר אותה קודם.
+>
+
+**11:47 · codex · assistant**
+
+> אבדוק את התלויות, הגדרות Vite ו־TypeScript ואת `PokemonPagination`, כדי להכין הגדרת Vitest ובדיקה אחת של התנהגות הרכיב. לאחר הסקירה אציג תוכנית קצרה; לפי `AGENTS.md`, נדרש אישורך לתוכנית לפני שינוי ההגדרות והתקנת החבילות.
+>
+
+**11:48 · codex · assistant**
+
+> נמצאה תאימות לגרסאות המותקנות: Vitest 5 תומך ב־Vite 8 וב־Node 24, ו־React Testing Library תומכת ב־React 19 ([תיעוד Vitest](https://vitest.dev/guide/)).
+>
+> התוכנית המצומצמת:
+>
+> 1. להוסיף Vitest, React Testing Library ו־jsdom כתלויות פיתוח, ולהגדיר סקריפטים להרצה חד־פעמית ולמצב צפייה.
+> 2. לכתוב **בדיקה אחת** ל־`PokemonPagination`: כפתורי העימוד מושבתים בגבולות, ולחיצה על כפתור פעיל מפעילה את הפונקציה המתאימה.
+> 3. לעדכן את `tasks.md`, להשאיר את דרישת חמש הבדיקות פתוחה, ולהריץ Vitest, Typecheck, Lint, Build ו־`git diff --check`.
+>
+> ההודעה שלך כבר נשמרה ביומן; טרם שונו קבצים או הותקנו חבילות.
+>
+> ב־[AGENTS.md](/C:/Users/user/Pokedex_Explorer/AGENTS.md) כתוב **״לפני שינוי גדול: להציג תוכנית קצרה ולחכות לאישור״**, ולכן אני ממתין לאישור לתוכנית הגדרת תשתית הבדיקות. לאשר ולהמשיך במימוש, ללא Commit או Push?
+
+**11:50 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+> אני מאשר את תוכנית העבודה. תמשיך למימוש Vitest בדיוק לפי התוכנית שהצגת.
+> כרגע תוסיף רק את סביבת הבדיקות ובדיקה אחת ל-PokemonPagination.
+> בסיום הרץ את כל הבדיקות, עדכן את tasks.md ושמור על התיעוד האוטומטי ב-PROMPTS.md.
+> אל תבצע Commit או Push. אני רוצה לבדוק ולאשר את התוצאה קודם.
+>
+
+**11:50 · codex · assistant**
+
+> אמשיך לפי התוכנית המאושרת: אגדיר את סביבת הבדיקות ואוסיף בדיקה אחת ל־`PokemonPagination`, בלי לשנות את קוד האפליקציה או העיצוב. לאחר מכן אריץ את הבדיקות ואעדכן את `tasks.md`, תוך שמירה על התיעוד וללא Commit או Push.
+>
+
+**11:52 · codex · assistant**
+
+> הבדיקה היחידה עברה: היא מוודאת שכפתורי העימוד מושבתים בעמוד הראשון והאחרון בהתאמה, ושכפתור פעיל מפעיל רק את הפונקציה הנכונה. גם Typecheck, Lint ו־Build עברו, ותוצר הבנייה נשאר זהה; כעת אעדכן את המשימות כך שדרישת חמש הבדיקות תישאר פתוחה במצב 1 מתוך 5.
+>
+
+**11:53 · codex · assistant**
+
+> הוגדרו Vitest ו־jsdom עם React Testing Library ונוספו `npm test` ו־`npm run test:watch`; הקבצים שהשתנו הם `package.json`, `package-lock.json`, `vite.config.ts`, `src/test/setup.ts`, `src/components/PokemonPagination.test.tsx`, `tasks.md` והיומן האוטומטי `PROMPTS.md`.
+>
+> הבדיקה היחידה ב־[PokemonPagination.test.tsx](/C:/Users/user/Pokedex_Explorer/src/components/PokemonPagination.test.tsx) מוודאת שכפתורים מושבתים בגבולות העימוד ושכפתור פעיל מפעיל את הפונקציה המתאימה; קוד האפליקציה, React Router והעיצוב נשארו ללא שינוי.
+>
+> `npm test` עבר עם **בדיקה אחת**, וגם Typecheck, Lint, Build ו־`git diff --check` עברו; [tasks.md](/C:/Users/user/Pokedex_Explorer/tasks.md) עודכן ודרישת חמש הבדיקות נשארה פתוחה במצב **1/5**, התיעוד האוטומטי אומת ולא בוצעו Commit או Push.
