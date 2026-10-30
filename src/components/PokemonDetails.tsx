@@ -1,46 +1,98 @@
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
+import type { Pokemon, PokemonResponse } from '../types/pokemon.ts'
 
-import type { Pokemon } from '../types/pokemon.ts'
-
-interface PokemonDetailsProps {
+interface PokemonDetailsState {
+  id: string
   pokemon: Pokemon | null
-  onBack: () => void
+  error: string | null
 }
 
-export default function PokemonDetails({ pokemon, onBack }: PokemonDetailsProps) {
-  if (!pokemon) {
-    return (
-      <aside className="pokemon-details">
-        <h2>Pokémon Details</h2>
-        <p>Select a Pokémon to view its details.</p>
-      </aside>
-    )
-  }
+export default function PokemonDetails() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const [details, setDetails] = useState<PokemonDetailsState | null>(null)
+  const validId = id !== undefined && /^[1-9]\d*$/.test(id) && Number.isSafeInteger(Number(id))
+
+  useEffect(() => {
+    if (!id || !validId) return
+    const requestedId = id
+    const controller = new AbortController()
+
+    async function loadPokemon(): Promise<void> {
+      try {
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + requestedId, {
+          signal: controller.signal,
+        })
+        if (response.status === 404) throw new Error('Pokémon not found.')
+        if (!response.ok) throw new Error('Failed to load Pokémon details')
+
+        const data: PokemonResponse = await response.json()
+        const pokemon: Pokemon = {
+          id: data.id,
+          name: data.name,
+          types: data.types.map((entry) => entry.type.name),
+          image:
+            data.sprites.other?.['official-artwork']?.front_default ??
+            data.sprites.front_default,
+        }
+
+        if (!controller.signal.aborted) {
+          setDetails({ id: requestedId, pokemon, error: null })
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setDetails({
+            id: requestedId,
+            pokemon: null,
+            error: err instanceof Error ? err.message : 'Failed to load Pokémon details',
+          })
+        }
+      }
+    }
+
+    loadPokemon()
+    return () => controller.abort()
+  }, [id, validId])
+
+  // Ignore an earlier request's result when the URL changes to another Pokémon.
+  const currentDetails = details?.id === id ? details : null
+  const error = validId ? currentDetails?.error : 'Invalid Pokémon ID.'
+  const loading = validId && !currentDetails
+  const pokemon = currentDetails?.pokemon
 
   return (
     <aside className="pokemon-details">
-      <button type="button" onClick={onBack}>
+      <button type="button" onClick={() => navigate('/')}>
         ← Back to Pokédex
       </button>
 
-      <h2>
-        {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
-      </h2>
+      {loading && <p role="status">Loading Pokémon details...</p>}
+      {error && <p role="alert">Error: {error}</p>}
 
-      {pokemon.image && (
-        <img
-          src={pokemon.image}
-          alt={`${pokemon.name} official artwork`}
-          width="220"
-          height="220"
-          style={{ objectFit: 'contain' }}
-        />
+      {!loading && !error && pokemon && (
+        <>
+          <h2>
+            {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+          </h2>
+
+          {pokemon.image && (
+            <img
+              src={pokemon.image}
+              alt={pokemon.name + ' official artwork'}
+              width="220"
+              height="220"
+              style={{ objectFit: 'contain' }}
+            />
+          )}
+
+          <p>
+            Pokédex Number: #{String(pokemon.id).padStart(4, '0')}
+          </p>
+
+          <p>Types: {pokemon.types.join(', ')}</p>
+        </>
       )}
-
-      <p>
-        Pokédex Number: #{String(pokemon.id).padStart(4, '0')}
-      </p>
-
-      <p>Types: {pokemon.types.join(', ')}</p>
     </aside>
   )
 }

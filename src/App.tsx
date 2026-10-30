@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router'
 import PokemonList from './components/PokemonList.tsx'
 import PokemonDetails from './components/PokemonDetails.tsx'
 import PokemonFilters from './components/PokemonFilters.tsx'
@@ -18,9 +19,9 @@ function getPokemonId(url: string): number {
 }
 
 export default function App() {
+  const navigate = useNavigate()
   const [speciesIndex, setSpeciesIndex] = useState<PokemonSummary[]>([])
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([])
-  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null)
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -362,74 +363,76 @@ export default function App() {
 
   return (
     <main className="app">
-      {selectedPokemon ? (
-        <PokemonDetails
-          pokemon={selectedPokemon}
-          onBack={() => setSelectedPokemon(null)}
-        />
-      ) : (
-        <>
-          <header className="app-header">
-            <p className="eyebrow">YOUR DIGITAL POKÉDEX</p>
-            <h1>PokéDex Explorer</h1>
-            <p className="intro">
-              Discover Pokémon from every generation.
-              Powered by PokéAPI.
-            </p>
-          </header>
-
-          <PokemonFilters
-            search={search}
-            selectedType={selectedType}
-            selectedGeneration={selectedGeneration}
-            selectedClassification={selectedClassification}
-            sortBy={sortBy}
-            onSearchChange={handleSearchChange}
-            onTypeChange={handleTypeChange}
-            onGenerationChange={handleGenerationChange}
-            onClassificationChange={handleClassificationChange}
-            onSortChange={handleSortChange}
-            onReset={resetFilters}
-          />
-
-          {!currentError && isLoading && (
-            <p role="status">Loading Pokémon...</p>
-          )}
-
-          {currentError && <p role="alert">Error: {currentError}</p>}
-
-          {!isLoading && !currentError && (
+      <Routes>
+        <Route
+          path="/"
+          element={
             <>
-              {filteredSpecies.length === 0 ? (
-                <p>No Pokémon found.</p>
-              ) : (
+              <header className="app-header">
+                <p className="eyebrow">YOUR DIGITAL POKÉDEX</p>
+                <h1>PokéDex Explorer</h1>
+                <p className="intro">
+                  Discover Pokémon from every generation.
+                  Powered by PokéAPI.
+                </p>
+              </header>
+
+              <PokemonFilters
+                search={search}
+                selectedType={selectedType}
+                selectedGeneration={selectedGeneration}
+                selectedClassification={selectedClassification}
+                sortBy={sortBy}
+                onSearchChange={handleSearchChange}
+                onTypeChange={handleTypeChange}
+                onGenerationChange={handleGenerationChange}
+                onClassificationChange={handleClassificationChange}
+                onSortChange={handleSortChange}
+                onReset={resetFilters}
+              />
+
+              {!currentError && isLoading && (
+                <p role="status">Loading Pokémon...</p>
+              )}
+
+              {currentError && <p role="alert">Error: {currentError}</p>}
+
+              {!isLoading && !currentError && (
                 <>
-                  <p className="results-count">
-                    Showing {firstResult}–{lastResult} of{' '}
-                    {filteredSpecies.length} Pokémon
-                  </p>
+                  {filteredSpecies.length === 0 ? (
+                    <p>No Pokémon found.</p>
+                  ) : (
+                    <>
+                      <p className="results-count">
+                        Showing {firstResult}–{lastResult} of{' '}
+                        {filteredSpecies.length} Pokémon
+                      </p>
 
-                  <PokemonList
-                    pokemon={pokemonList}
-                    onSelect={setSelectedPokemon}
-                  />
+                      <PokemonList
+                        pokemon={pokemonList}
+                        onSelect={(pokemon) => navigate(`/pokemon/${pokemon.id}`)}
+                      />
 
-                  <PokemonPagination
-                    page={page}
-                    totalPages={totalPages}
-                    onPrevious={() =>
-                      setPage((current) => Math.max(1, current - 1))
-                    }
-                    onNext={() =>
-                      setPage((current) => Math.min(totalPages, current + 1))
-                    }
-                  />
+                      <PokemonPagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPrevious={() =>
+                          setPage((current) => Math.max(1, current - 1))
+                        }
+                        onNext={() =>
+                          setPage((current) => Math.min(totalPages, current + 1))
+                        }
+                      />
+                    </>
+                  )}
                 </>
               )}
             </>
-          )}
-        </>
-      )}
+          }
+        />
+        <Route path="/pokemon/:id" element={<PokemonDetails />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </main>
   )
 }
