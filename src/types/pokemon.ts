@@ -22,7 +22,29 @@ export interface Pokemon extends PokemonSummary {
   image: string | null
 }
 
-// Only the API fields consumed by the catalog are modeled here.
+export type PokemonStatName =
+  | 'hp'
+  | 'attack'
+  | 'defense'
+  | 'special-attack'
+  | 'special-defense'
+  | 'speed'
+
+export interface PokemonStat {
+  name: PokemonStatName
+  value: number
+}
+
+export interface PokemonWithStats extends Pokemon {
+  stats: PokemonStat[]
+}
+
+export interface PokemonStatResponse {
+  base_stat: number
+  stat: { name: PokemonStatName }
+}
+
+// Only the API fields consumed by the catalog and details are modeled here.
 export interface NamedApiResource {
   name: string
   url: string
@@ -41,6 +63,7 @@ export interface PokemonGenerationResponse {
 }
 
 export interface PokemonResponse extends PokemonSummary {
+  stats: PokemonStatResponse[]
   types: { type: NamedApiResource }[]
   sprites: {
     front_default: string | null

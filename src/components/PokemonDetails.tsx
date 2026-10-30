@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import type { Pokemon, PokemonResponse } from '../types/pokemon.ts'
+import type { PokemonResponse, PokemonWithStats } from '../types/pokemon.ts'
+import PokemonStats from './PokemonStats.tsx'
 
 interface PokemonDetailsState {
   id: string
-  pokemon: Pokemon | null
+  pokemon: PokemonWithStats | null
   error: string | null
 }
 
@@ -28,9 +29,13 @@ export default function PokemonDetails() {
         if (!response.ok) throw new Error('Failed to load Pokémon details')
 
         const data: PokemonResponse = await response.json()
-        const pokemon: Pokemon = {
+        const pokemon: PokemonWithStats = {
           id: data.id,
           name: data.name,
+          stats: data.stats.map((entry) => ({
+            name: entry.stat.name,
+            value: entry.base_stat,
+          })),
           types: data.types.map((entry) => entry.type.name),
           image:
             data.sprites.other?.['official-artwork']?.front_default ??
@@ -91,6 +96,8 @@ export default function PokemonDetails() {
           </p>
 
           <p>Types: {pokemon.types.join(', ')}</p>
+
+          <PokemonStats stats={pokemon.stats} />
         </>
       )}
     </aside>
