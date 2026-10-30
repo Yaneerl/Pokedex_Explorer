@@ -1009,3 +1009,140 @@
 > כל **11 בדיקות Vitest** עברו, כולל הגבולות 49, 50, 89 ו־90, וגם Typecheck, Lint, Build ו־`git diff --check` עברו; הצביעה נבדקה בדפדפן במחשב ובמובייל.
 >
 > השמות, הערכים, אורכי הפסים והסקאלה נשמרו, משימת הפרטים המורחבים נשארה פתוחה והתיעוד האוטומטי אומת; לא בוצעו Commit או Push, והתוצאה זמינה [לבדיקה בדפדפן](http://127.0.0.1:5173/pokemon/25).
+
+**12:45 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+>
+>
+> השלמנו את הסטטיסטיקות והצביעה הדינמית, וביצענו Commit ו-Push בהצלחה.
+>
+> כעת אני רוצה להוסיף רק את ה-Abilities למסך פרטי הפוקימון, כחלק ממשימה 7.
+>
+> ### דרישות
+>
+> 1. הצג את היכולות האמיתיות של כל פוקימון באמצעות נתוני PokéAPI.
+> 2. הצג את שמות היכולות בצורה ברורה וקריאה.
+> 3. הבדל בין Abilities רגילות לבין Hidden Abilities באמצעות תגית מתאימה.
+> 4. השתמש ב-TypeScript ללא any.
+> 5. שמור על מסך הסטטיסטיקות ועל כל הפונקציונליות הקיימת.
+> 6. הוסף בדיקת Vitest משמעותית ללוגיקה החדשה, ככל שנדרש.
+> 7. עדכן את סעיף ה-Abilities ב-tasks.md, אך אל תסמן את כל משימה 7 כהושלמה.
+> 8. ודא שהתיעוד האוטומטי ב-PROMPTS.md ממשיך לפעול.
+>
+> ### בדיקות
+>
+> הרץ npm run test, npm run typecheck, npm run lint, npm run build ו-git diff --check.
+>
+> אל תוסיף כרגע גובה, משקל, Evolution Chain, Shiny או פיצ'רים אחרים. אלה יהיו תוספות נפרדות.
+>
+> אל תבצע Commit או Push. אני רוצה לבדוק את התוצאה בדפדפן קודם.
+>
+> בסיום הצג את הקבצים ששונו ואת תוצאות הבדיקות.
+>
+
+**12:45 · codex · assistant**
+
+> אבדוק את רכיב הפרטים ואת נתוני היכולות שמגיעים מ־PokéAPI, ואז אציג תוכנית קצרה להוספת שמות היכולות וסימון Hidden Abilities בלבד. לפני שינוי הממשק אמתין לאישורך לתוכנית, לפי `AGENTS.md`; לא אבצע Commit או Push.
+>
+
+**12:46 · codex · assistant**
+
+> היכולות כבר מגיעות בתשובת הפרטים הקיימת, כולל הדגל `is_hidden`, כך שאין צורך בבקשת API נוספת ([תיעוד PokéAPI](https://pokeapi.co/docs/v2#pokemon)).
+>
+> התוכנית:
+>
+> 1. להוסיף טיפוסים ליכולות ורכיב `PokemonAbilities` מתחת לסטטיסטיקות.
+> 2. להציג שמות קריאים, למשל **Lightning Rod**, עם תגיות **Regular Ability** ו־**Hidden Ability** לפי נתוני ה־API.
+> 3. להוסיף בדיקת רכיב שמוודאת שכל יכולת מוצגת עם התגית הנכונה.
+> 4. לעדכן רק את סעיף היכולות במשימת הפרטים המורחבים, להשאירה פתוחה ולהריץ את כל הבדיקות שביקשת.
+>
+> ההודעה נשמרה אוטומטית ביומן, וטרם שיניתי קוד.
+>
+> ב־[AGENTS.md](/C:/Users/user/Pokedex_Explorer/AGENTS.md) כתוב **״לפני שינוי גדול: להציג תוכנית קצרה ולחכות לאישור״**, ולכן אני ממתין לאישורך לשינוי בממשק. לאשר ולהמשיך במימוש, ללא Commit או Push?
+
+**12:50 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+> אני מאשר את תוכנית העבודה להוספת Abilities למסך פרטי הפוקימון בפרויקט PokéDex Explorer.
+>
+> ### דרישות המימוש
+>
+> 1. הצג את כל היכולות (Abilities) של הפוקימון באמצעות הנתונים הקיימים מ־PokéAPI, ללא בקשות API נוספות אם אין בהן צורך.
+> 2. הצג כל יכולת עם שם קריא וברור.
+> 3. הבדל בין Regular Ability לבין Hidden Ability באמצעות תגית טקסט ברורה.
+> 4. צור קומפוננטה נפרדת בשם PokemonAbilities.tsx.
+> 5. הצג את היכולות מתחת לסטטיסטיקות במסך הפרטים.
+> 6. השתמש ב־TypeScript עם טיפוסים מוגדרים וללא any.
+>
+> ### עיצוב
+>
+> כרגע אני רוצה עיצוב בסיסי, נקי ומסודר בלבד.
+>
+> - הצג כל יכולת בצורה ברורה ונוחה לקריאה.
+> - השתמש במחלקות CSS מסודרות כדי שנוכל לשדרג את העיצוב בעתיד.
+> - אל תוסיף כרגע אייקונים, אנימציות, אפקטים זוהרים או ספריות עיצוב.
+> - את כל ה־UX/UI המתקדם נעשה בהמשך, בשלב עיצוב נפרד לכל האתר.
+>
+> ### בדיקות ותיעוד
+>
+> - הוסף בדיקת Vitest משמעותית לתצוגת היכולות, כולל הבחנה בין Regular ל־Hidden.
+> - שמור על כל הפונקציונליות הקיימת, כולל React Router והסטטיסטיקות.
+> - עדכן ב־tasks.md רק את סעיף ה־Abilities במשימה 7. אל תסמן את כל המשימה כהושלמה.
+> - ודא שהתיעוד האוטומטי ב־PROMPTS.md ממשיך לפעול.
+>
+> בסיום הרץ:
+>
+> - npm run test
+> - npm run typecheck
+> - npm run lint
+> - npm run build
+> - git diff --check
+>
+> ### חשוב
+>
+> בצע רק את תוספת ה־Abilities. אל תוסיף כרגע גובה, משקל, Evolution Chain או Shiny.
+>
+> אל תבצע Commit או Push בעצמך. אני רוצה לבדוק את התוצאה בדפדפן לפני שנשמור אותה ב־GitHub.
+>
+> אני מאשר להמשיך למימוש לפי התוכנית שכבר הצגת.
+>
+
+**12:50 · codex · assistant**
+
+> אממש את `PokemonAbilities.tsx` מתחת לסטטיסטיקות, עם שמות קריאים ותגיות Regular/Hidden מתוך תגובת הפרטים הקיימת. אוסיף בדיקת תצוגה אחת, אעדכן רק את סעיף היכולות ואריץ את כל הבדיקות שביקשת, ללא Commit או Push.
+>
+
+**12:53 · codex · assistant**
+
+> היכולות מוצגות כעת מתחת לסטטיסטיקות, עם שמות קריאים ותגיות טקסט Regular Ability ו־Hidden Ability. בדיקת התצוגה החדשה עברה, ובסך הכול עברו 12 בדיקות Vitest וגם Typecheck, Lint ו־Build; כעת אני מאמת בדפדפן את הנתונים, התגיות והפריסה במחשב ובמובייל.
+>
+
+**12:54 · codex · assistant**
+
+> בדיקת הדפדפן מול PokéAPI עברה: כל היכולות והתגיות תואמות לנתונים, כולל פוקימון ללא Hidden Ability ופוקימון עם שלוש יכולות. התצוגה נבדקה במחשב ובמובייל, הסטטיסטיקות והניווט נשמרו, ולא נשלחו בקשות לנתיבי Ability נוספים; נותר לעדכן את סעיף היכולות ולהריץ `git diff --check`.
+>
+
+**12:54 · codex · assistant**
+
+> נוספו [PokemonAbilities.tsx](/C:/Users/user/Pokedex_Explorer/src/components/PokemonAbilities.tsx) ו־[בדיקת התצוגה](/C:/Users/user/Pokedex_Explorer/src/components/PokemonAbilities.test.tsx), ועודכנו `PokemonDetails.tsx`, `src/types/pokemon.ts` ו־`src/index.css`; היכולות מוצגות מתחת לסטטיסטיקות עם שמות קריאים ותגיות Regular/Hidden, ללא בקשות API נוספות או `any`.
+>
+> כל **12 בדיקות Vitest**, Typecheck, Lint, Build ו־`git diff --check` עברו, וכן 22 בדיקות דפדפן מול PokéAPI, כולל מחשב ומובייל.
+>
+> ב־`tasks.md` עודכן רק סעיף Abilities והמשימה הכוללת נשארה פתוחה, התיעוד האוטומטי ב־`PROMPTS.md` אומת ולא בוצעו Commit או Push — התוצאה זמינה [לבדיקה בדפדפן](http://127.0.0.1:5173/pokemon/25).

@@ -36,3 +36,11 @@ h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.055
 .pokemon-stat-fill--low { background: #e25065; }
 .pokemon-stat-fill--medium { background: #d9ad32; }
 .pokemon-stat-fill--high { background: #4b9e72; }
+
+.pokemon-abilities { max-width: 520px; margin-top: 28px; }
+.pokemon-abilities h3 { margin: 0; font-size: 20px; }
+.pokemon-abilities-list { display: grid; gap: 10px; margin: 16px 0 0; padding: 0; list-style: none; }
+.pokemon-ability { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px; border: 1px solid #e7edf4; border-radius: 8px; background: white; }
+.pokemon-ability-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.pokemon-ability-badge { padding: 4px 8px; border-radius: 6px; background: #eff2f6; color: #475569; font-size: 12px; }
+.pokemon-ability-badge--hidden { background: #f1eafa; color: #6d4c91; }

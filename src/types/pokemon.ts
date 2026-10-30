@@ -39,6 +39,22 @@ export interface PokemonWithStats extends Pokemon {
   stats: PokemonStat[]
 }
 
+export interface PokemonAbility {
+  name: string
+  isHidden: boolean
+  slot: number
+}
+
+export interface PokemonDetailsData extends PokemonWithStats {
+  abilities: PokemonAbility[]
+}
+
+export interface PokemonAbilityResponse {
+  ability: NamedApiResource
+  is_hidden: boolean
+  slot: number
+}
+
 export interface PokemonStatResponse {
   base_stat: number
   stat: { name: PokemonStatName }
@@ -63,6 +79,7 @@ export interface PokemonGenerationResponse {
 }
 
 export interface PokemonResponse extends PokemonSummary {
+  abilities: PokemonAbilityResponse[]
   stats: PokemonStatResponse[]
   types: { type: NamedApiResource }[]
   sprites: {
