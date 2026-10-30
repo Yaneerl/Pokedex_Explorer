@@ -732,3 +732,58 @@
 > הבדיקה היחידה ב־[PokemonPagination.test.tsx](/C:/Users/user/Pokedex_Explorer/src/components/PokemonPagination.test.tsx) מוודאת שכפתורים מושבתים בגבולות העימוד ושכפתור פעיל מפעיל את הפונקציה המתאימה; קוד האפליקציה, React Router והעיצוב נשארו ללא שינוי.
 >
 > `npm test` עבר עם **בדיקה אחת**, וגם Typecheck, Lint, Build ו־`git diff --check` עברו; [tasks.md](/C:/Users/user/Pokedex_Explorer/tasks.md) עודכן ודרישת חמש הבדיקות נשארה פתוחה במצב **1/5**, התיעוד האוטומטי אומת ולא בוצעו Commit או Push.
+
+**12:03 · codex · user**
+
+> # Context from my IDE setup:
+>
+> ## Open tabs:
+> - tasks.md: tasks.md
+> - PROMPTS.md: PROMPTS.md
+> - PokemonCard.tsx: src/components/PokemonCard.tsx
+> - PokemonDetails.tsx: src/components/PokemonDetails.tsx
+>
+> ## My request:
+>
+>
+> סיימנו את הגדרת Vitest ואת בדיקת ה-Pagination, וה-Commit כבר עלה ל-GitHub.
+>
+> כעת אני רוצה להוסיף בדיקות Vitest לחיפוש פוקימונים.
+>
+> 1. בדוק כיצד ממומש החיפוש כיום ב-App.tsx.
+> 2. כתוב בדיקות משמעותיות לחיפוש לפי שם חלקי ולפי מספר פוקדקס.
+> 3. הבדיקות חייבות לבדוק את הלוגיקה האמיתית של האפליקציה, ולא לשכפל אותה בתוך קובץ הבדיקות.
+> 4. אם צריך, חלץ את לוגיקת החיפוש לפונקציה נפרדת עם טיפוסים מתאימים, בלי לשנות את התנהגות האתר.
+> 5. השאר את כל הפיצ'רים הקיימים תקינים.
+> 6. עדכן את tasks.md בהתאם למספר הבדיקות שעברו.
+> 7. ודא שהתיעוד האוטומטי ב-PROMPTS.md ממשיך לעבוד.
+>
+> הרץ npm run test, npm run typecheck, npm run lint, npm run build ו-git diff --check.
+>
+> אל תוסיף כרגע בדיקות סינון, מיון או פיצ'רים חדשים.
+>
+> אל תבצע Commit או Push. אני רוצה לבדוק ולאשר את התוצאה לפני כן.
+>
+
+**12:03 · codex · assistant**
+
+> אבדוק את מימוש החיפוש ואת מבנה הבדיקות הקיים, ואז אוסיף בדיקות לשם חלקי ולמספר פוקדקס שמשתמשות בלוגיקה של האפליקציה עצמה. אשמור על היקף ממוקד, אעדכן את `tasks.md` לפי התוצאות ואריץ את כל הבדיקות שביקשת, ללא Commit או Push.
+>
+
+**12:04 · codex · assistant**
+
+> החיפוש כיום ממתין 300 מילישניות, מסיר רווחים בקצוות וממיר לאותיות קטנות; לאחר מכן הוא מחפש התאמה חלקית בשם או התאמה מדויקת למספר. אחלץ רק את שני ענפי ההתאמה לפונקציה מטיפוס `PokemonSummary`, אחבר אותה חזרה ל־`App` ואוסיף שתי בדיקות — כך שההשהיה והנרמול יישארו כפי שהם.
+>
+
+**12:05 · codex · assistant**
+
+> שתי בדיקות החיפוש עברו: `saur` מחזיר את שלושת השמות המתאימים, ו־`25` מחזיר רק את פיקאצ׳ו — בלי להתאים גם ל־125 או ל־252. יחד עם בדיקת ה־Pagination יש כעת 3 בדיקות עוברות; גם Typecheck, Lint ו־Build עברו, ונותרו עדכון המשימות ואימות `git diff --check` והתיעוד.
+>
+
+**12:05 · codex · assistant**
+
+> לוגיקת החיפוש חולצה ל־[searchPokemon.ts](/C:/Users/user/Pokedex_Explorer/src/utils/searchPokemon.ts), המשמשת גם את `App` וגם את [בדיקות החיפוש](/C:/Users/user/Pokedex_Explorer/src/utils/searchPokemon.test.ts); שתי הבדיקות מאמתות התאמה לשם חלקי ומספר מדויק, ללא שינוי בהתנהגות האתר.
+>
+> כל הפקודות עברו: `npm run test` עם **3 בדיקות עוברות**, `npm run typecheck`, `npm run lint`, `npm run build` ו־`git diff --check`.
+>
+> `tasks.md` עודכן למצב **3/5** והדרישה המלאה נשארה פתוחה; התיעוד האוטומטי אומת, לא נוספו בדיקות סינון או מיון ולא בוצעו Commit או Push.

@@ -5,6 +5,7 @@ import PokemonDetails from './components/PokemonDetails.tsx'
 import PokemonFilters from './components/PokemonFilters.tsx'
 import PokemonPagination from './components/PokemonPagination.tsx'
 import usePokemonClassification from './hooks/usePokemonClassification.ts'
+import searchPokemon from './utils/searchPokemon.ts'
 import type {
   ClassificationFilter, GenerationFilter, GenerationResults, Pokemon,
   PokemonGenerationResponse, PokemonResponse, PokemonSummary, PokemonTypeResponse,
@@ -195,17 +196,7 @@ export default function App() {
       })
     }
 
-    if (debouncedSearch) {
-      if (/^\d+$/.test(debouncedSearch)) {
-        results = results.filter(
-          (pokemon) => pokemon.id === Number(debouncedSearch)
-        )
-      } else {
-        results = results.filter((pokemon) =>
-          pokemon.name.includes(debouncedSearch)
-        )
-      }
-    }
+    results = searchPokemon(results, debouncedSearch)
 
     const sorted = [...results]
     switch (sortBy) {
