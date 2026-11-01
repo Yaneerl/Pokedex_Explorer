@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { readFavorites, setFavorite, writeFavorites } from '../utils/favorites.ts'
+import type { FavoriteIds } from '../utils/favorites.ts'
 
 interface PokemonFavoriteButtonProps {
   pokemonId: number
   name: string
+  onChange?: (ids: FavoriteIds) => void
 }
 
-export default function PokemonFavoriteButton({ pokemonId, name }: PokemonFavoriteButtonProps) {
+export default function PokemonFavoriteButton({ pokemonId, name, onChange }: PokemonFavoriteButtonProps) {
   const [favorites, setFavorites] = useState(readFavorites)
   const isFavorite = favorites.ids.includes(pokemonId)
   const label = isFavorite ? 'Remove ' + name + ' from favorites' : 'Add ' + name + ' to favorites'
@@ -21,6 +23,7 @@ export default function PokemonFavoriteButton({ pokemonId, name }: PokemonFavori
     const next = setFavorite(saved.ids, pokemonId, !isFavorite)
     const error = writeFavorites(next)
     setFavorites({ ids: error ? saved.ids : next, error })
+    if (!error) onChange?.(next)
   }
 
   return (

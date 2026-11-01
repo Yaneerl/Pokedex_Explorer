@@ -94,3 +94,13 @@ h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.055
 .pokemon-favorite-button:focus-visible { outline: 2px solid #475569; outline-offset: 3px; }
 .pokemon-favorite-button:disabled { cursor: default; opacity: .6; }
 .pokemon-favorite-error { margin: 8px 0 0; color: #9f2943; font-size: 14px; }
+
+.app-navigation { margin-top: 16px; }
+.app-navigation a { display: inline-block; padding: 8px 14px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; }
+.app-navigation a:focus-visible, .favorites-back-link:focus-visible, .pokemon-card-select:focus-visible { outline: 2px solid #475569; outline-offset: 3px; }
+.favorites-back-link { display: inline-block; margin-top: 8px; color: #475569; }
+.pokemon-card-select { cursor: pointer; border-radius: 6px; }
+.pokemon-favorites-grid .pokemon-card { min-width: 0; }
+.pokemon-favorites-grid .pokemon-favorite { margin-bottom: 0; }
+.pokemon-favorites-grid .pokemon-favorite-button { max-width: 100%; padding: 8px; gap: 6px; font-size: 12px; text-align: left; }
+@media (max-width: 420px) { .pokemon-favorites-grid { grid-template-columns: 1fr; } }

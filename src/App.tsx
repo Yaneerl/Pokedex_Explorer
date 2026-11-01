@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Navigate, Route, Routes, useNavigate } from 'react-router'
+import { Link, Navigate, Route, Routes, useNavigate } from 'react-router'
 import PokemonList from './components/PokemonList.tsx'
 import PokemonDetails from './components/PokemonDetails.tsx'
+import PokemonFavorites from './components/PokemonFavorites.tsx'
+import toPokemonCard from './utils/toPokemonCard.ts'
 import PokemonFilters from './components/PokemonFilters.tsx'
 import PokemonPagination from './components/PokemonPagination.tsx'
 import usePokemonClassification from './hooks/usePokemonClassification.ts'
@@ -243,14 +245,7 @@ export default function App() {
             }
 
             const data: PokemonResponse = await response.json()
-            return {
-              id: data.id,
-              name: data.name,
-              types: data.types.map((entry) => entry.type.name),
-              image:
-                data.sprites.other?.['official-artwork']?.front_default ??
-                data.sprites.front_default,
-            }
+            return toPokemonCard(data)
           })
         )
 
@@ -354,6 +349,9 @@ export default function App() {
                   Discover Pokémon from every generation.
                   Powered by PokéAPI.
                 </p>
+                <nav className="app-navigation" aria-label="Main navigation">
+                  <Link to="/favorites">Favorites</Link>
+                </nav>
               </header>
 
               <PokemonFilters
@@ -409,6 +407,7 @@ export default function App() {
             </>
           }
         />
+        <Route path="/favorites" element={<PokemonFavorites />} />
         <Route path="/pokemon/:id" element={<PokemonDetails />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
