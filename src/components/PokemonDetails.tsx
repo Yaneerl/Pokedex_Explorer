@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import type { PokemonResponse, PokemonDetailsData } from '../types/pokemon.ts'
-import PokemonStats from './PokemonStats.tsx'
-import PokemonArtwork from './PokemonArtwork.tsx'
-import PokemonAbilities from './PokemonAbilities.tsx'
+import type { PokemonResponse } from '../types/pokemon.ts'
+import PokemonForms from './PokemonForms.tsx'
 import PokemonEvolution from './PokemonEvolution.tsx'
-import { decimetersToMeters, hectogramsToKilograms } from '../utils/convertPokemonMeasurements.ts'
 
 interface PokemonDetailsState {
   id: string
-  pokemon: PokemonDetailsData | null
+  pokemon: PokemonResponse | null
   error: string | null
 }
 
@@ -33,32 +30,9 @@ export default function PokemonDetails() {
         if (!response.ok) throw new Error('Failed to load Pokémon details')
 
         const data: PokemonResponse = await response.json()
-        const pokemon: PokemonDetailsData = {
-          id: data.id,
-          name: data.name,
-          speciesUrl: data.species.url,
-          heightMeters: decimetersToMeters(data.height),
-          weightKg: hectogramsToKilograms(data.weight),
-          abilities: data.abilities.map((entry) => ({
-            name: entry.ability.name,
-            isHidden: entry.is_hidden,
-            slot: entry.slot,
-          })),
-          stats: data.stats.map((entry) => ({
-            name: entry.stat.name,
-            value: entry.base_stat,
-          })),
-          types: data.types.map((entry) => entry.type.name),
-          shinyImage:
-            data.sprites.other?.['official-artwork']?.front_shiny ??
-            data.sprites.front_shiny ?? null,
-          image:
-            data.sprites.other?.['official-artwork']?.front_default ??
-            data.sprites.front_default,
-        }
 
         if (!controller.signal.aborted) {
-          setDetails({ id: requestedId, pokemon, error: null })
+          setDetails({ id: requestedId, pokemon: data, error: null })
         }
       } catch (err) {
         if (!controller.signal.aborted) {
@@ -92,37 +66,8 @@ export default function PokemonDetails() {
 
       {!loading && !error && pokemon && (
         <>
-          <h2>
-            {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
-          </h2>
-
-          <PokemonArtwork
-            key={pokemon.id}
-            name={pokemon.name}
-            image={pokemon.image}
-            shinyImage={pokemon.shinyImage}
-          />
-
-          <p>
-            Pokédex Number: #{String(pokemon.id).padStart(4, '0')}
-          </p>
-
-          <p>Types: {pokemon.types.join(', ')}</p>
-
-          <dl className="pokemon-measurements" aria-label="Height and weight">
-            <div className="pokemon-measurement">
-              <dt>Height</dt>
-              <dd>{pokemon.heightMeters.toFixed(1)} m</dd>
-            </div>
-            <div className="pokemon-measurement">
-              <dt>Weight</dt>
-              <dd>{pokemon.weightKg.toFixed(1)} kg</dd>
-            </div>
-          </dl>
-
-          <PokemonStats stats={pokemon.stats} />
-          <PokemonAbilities abilities={pokemon.abilities} />
-          <PokemonEvolution speciesUrl={pokemon.speciesUrl} />
+          <PokemonForms key={pokemon.id} pokemon={pokemon} />
+          <PokemonEvolution speciesUrl={pokemon.species.url} />
         </>
       )}
     </aside>

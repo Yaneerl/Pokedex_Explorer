@@ -6,7 +6,7 @@ import PokemonDetails from './PokemonDetails.tsx'
 
 function pokemon(id: number, name: string, shinyArtwork: string | null): PokemonResponse {
   return {
-    id, name, height: 7, weight: 69,
+    id, name, height: 7, weight: 69, forms: [],
     species: { name, url: 'https://pokeapi.co/api/v2/pokemon-species/' + id + '/' },
     abilities: [{ ability: { name: 'overgrow', url: '/ability/65/' }, is_hidden: false, slot: 1 }],
     types: [{ type: { name: 'grass', url: '/type/12/' } }],
@@ -35,7 +35,16 @@ test('uses API artwork and sprite fallback, preserves details on toggle and rese
     const url = String(input)
     if (url === 'https://pokeapi.co/api/v2/pokemon/1') return Response.json(first)
     if (url === 'https://pokeapi.co/api/v2/pokemon/2') return Response.json(second)
-    if (url.includes('/pokemon-species/')) return Response.json({ evolution_chain: { url: '/chain/' } })
+    if (url.includes('/pokemon-species/')) {
+      const data = url === first.species.url ? first : second
+      return Response.json({
+        evolution_chain: { url: '/chain/' },
+        varieties: [{
+          is_default: true,
+          pokemon: { name: data.name, url: 'https://pokeapi.co/api/v2/pokemon/' + data.id },
+        }],
+      })
+    }
     if (url === '/chain/') return Response.json({ chain: { species: first.species, evolves_to: [] } })
     throw new Error('Unexpected request: ' + url)
   })

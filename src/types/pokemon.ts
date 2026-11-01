@@ -83,6 +83,7 @@ export interface PokemonGenerationResponse {
 }
 
 export interface PokemonResponse extends PokemonSummary {
+  forms: NamedApiResource[]
   species: NamedApiResource
   height: number // Decimeters, as returned by PokeAPI.
   weight: number // Hectograms, as returned by PokeAPI.
@@ -126,6 +127,7 @@ export interface GenerationResults {
 }
 
 export interface PokemonSpeciesResponse {
+  varieties: { is_default: boolean; pokemon: NamedApiResource }[]
   evolution_chain: { url: string } | null
 }
 
@@ -145,4 +147,19 @@ export interface EvolutionNode extends PokemonSummary {
 export interface EvolutionStage extends PokemonSummary {
   image: string | null
   children: EvolutionStage[]
+}
+
+export interface PokemonFormResponse {
+  is_mega: boolean
+  names: { name: string; language: NamedApiResource }[]
+}
+
+export interface PokemonFormOption {
+  label: string
+  pokemon: PokemonDetailsData
+}
+
+export interface PokemonMegaFormsData {
+  regular: PokemonDetailsData
+  megaForms: PokemonFormOption[]
 }
