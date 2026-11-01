@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import type { PokemonSummary } from '../types/pokemon.ts'
 import comparisonSelection, { initialComparisonState } from '../utils/comparisonSelection.ts'
 import useFavoritePokemon from '../hooks/useFavoritePokemon.ts'
+import PokemonStatsComparison from './PokemonStatsComparison.tsx'
 import PokemonComparisonSlot from './PokemonComparisonSlot.tsx'
 
 interface PokemonComparisonProps {
@@ -45,6 +46,11 @@ export default function PokemonComparison({ pokemonIndex, indexLoading, indexErr
           searchUnavailable={indexLoading || !!indexError}
         />
       </div>
+      {selection.left.pokemon && selection.right.pokemon && (
+        selection.left.pendingId !== null || selection.right.pendingId !== null
+          ? <p className="stats-comparison-loading" role="status">Updating stats comparison...</p>
+          : <PokemonStatsComparison left={selection.left.pokemon} right={selection.right.pokemon} />
+      )}
     </section>
   )
 }

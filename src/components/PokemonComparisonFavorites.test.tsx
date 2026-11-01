@@ -6,10 +6,15 @@ import { FAVORITES_STORAGE_KEY } from '../utils/favorites.ts'
 import PokemonComparison from './PokemonComparison.tsx'
 
 const index: PokemonSummary[] = [{ id: 1, name: 'bulbasaur' }, { id: 6, name: 'charizard' }, { id: 25, name: 'pikachu' }]
-function data(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites'> {
+function data(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites' | 'stats'> {
   const summary = index.find((item) => item.id === id)
   if (!summary) throw new Error('Unexpected fixture ID')
   return { ...summary, types: [{ type: { name: id === 6 ? 'fire' : 'electric', url: '/type/' } }],
+    stats: [
+      { base_stat: 45, stat: { name: 'hp' } }, { base_stat: 49, stat: { name: 'attack' } },
+      { base_stat: 49, stat: { name: 'defense' } }, { base_stat: 65, stat: { name: 'special-attack' } },
+      { base_stat: 65, stat: { name: 'special-defense' } }, { base_stat: 45, stat: { name: 'speed' } },
+    ],
     sprites: { front_default: '/sprite-' + id + '.png', front_shiny: null } }
 }
 function mockApi() {

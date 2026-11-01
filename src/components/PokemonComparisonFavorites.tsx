@@ -1,11 +1,11 @@
 import { Link } from 'react-router'
-import type { Pokemon } from '../types/pokemon.ts'
+import type { PokemonWithStats } from '../types/pokemon.ts'
 import type { FavoritePokemonResult } from '../hooks/useFavoritePokemon.ts'
 
 interface PokemonComparisonFavoritesProps {
   number: number
   favorites: FavoritePokemonResult
-  onSelect: (pokemon: Pokemon) => void
+  onSelect: (pokemon: PokemonWithStats) => void
 }
 
 export default function PokemonComparisonFavorites({ number, favorites, onSelect }: PokemonComparisonFavoritesProps) {

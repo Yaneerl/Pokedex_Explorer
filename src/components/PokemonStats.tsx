@@ -1,20 +1,10 @@
-import type { PokemonStat, PokemonStatName } from '../types/pokemon.ts'
+import type { PokemonStat } from '../types/pokemon.ts'
+import { STAT_LABELS, STAT_SCALE_MAX } from '../utils/pokemonStats.ts'
 import getStatLevel from '../utils/getStatLevel.ts'
 
 interface PokemonStatsProps {
   stats: PokemonStat[]
 }
-
-const STAT_LABELS: Record<PokemonStatName, string> = {
-  hp: 'HP',
-  attack: 'Attack',
-  defense: 'Defense',
-  'special-attack': 'Special Attack',
-  'special-defense': 'Special Defense',
-  speed: 'Speed',
-}
-
-const STAT_SCALE_MAX = 255
 
 export default function PokemonStats({ stats }: PokemonStatsProps) {
   return (

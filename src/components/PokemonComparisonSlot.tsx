@@ -5,7 +5,7 @@ import type { ComparisonAction, ComparisonSelection, ComparisonSide } from '../u
 import type { FavoritePokemonResult } from '../hooks/useFavoritePokemon.ts'
 import PokemonComparisonFavorites from './PokemonComparisonFavorites.tsx'
 import searchPokemon from '../utils/searchPokemon.ts'
-import toPokemonCard from '../utils/toPokemonCard.ts'
+import toPokemonWithStats from '../utils/toPokemonWithStats.ts'
 import PokemonCardContent from './PokemonCardContent.tsx'
 
 interface PokemonComparisonSlotProps {
@@ -38,7 +38,7 @@ export default function PokemonComparisonSlot({ side, pokemonIndex, selection, d
         if (!response.ok) throw new Error('Failed to load Pokémon.')
         const data: PokemonResponse = await response.json()
         if (data.id !== id) throw new Error('Unexpected Pokémon data.')
-        if (!controller.signal.aborted) dispatch({ type: 'loaded', side, id, pokemon: toPokemonCard(data) })
+        if (!controller.signal.aborted) dispatch({ type: 'loaded', side, id, pokemon: toPokemonWithStats(data) })
       } catch (error) {
         if (!controller.signal.aborted) {
           dispatch({ type: 'failed', side, id, error: error instanceof Error ? error.message : 'Failed to load Pokémon.' })

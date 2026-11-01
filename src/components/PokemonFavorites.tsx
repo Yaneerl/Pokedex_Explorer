@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import type { Pokemon } from '../types/pokemon.ts'
 import { readFavorites } from '../utils/favorites.ts'
+import toPokemonCard from '../utils/toPokemonCard.ts'
 import loadFavoritePokemon from '../utils/loadFavoritePokemon.ts'
 import PokemonCard from './PokemonCard.tsx'
 import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
@@ -23,7 +24,8 @@ export default function PokemonFavorites() {
 
     async function loadFavorites(): Promise<void> {
       try {
-        const pokemon = await loadFavoritePokemon(saved.ids, controller.signal)
+        const data = await loadFavoritePokemon(saved.ids, controller.signal)
+        const pokemon = data.map(toPokemonCard)
         if (!controller.signal.aborted) setResult({ pokemon, error: null })
       } catch (error) {
         if (!controller.signal.aborted) {

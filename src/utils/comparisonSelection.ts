@@ -1,9 +1,9 @@
-import type { Pokemon } from '../types/pokemon.ts'
+import type { PokemonWithStats } from '../types/pokemon.ts'
 
 export type ComparisonSide = 'left' | 'right'
 
 export interface ComparisonSelection {
-  pokemon: Pokemon | null
+  pokemon: PokemonWithStats | null
   pendingId: number | null
   error: string | null
 }
@@ -11,8 +11,8 @@ export interface ComparisonSelection {
 export type ComparisonState = Record<ComparisonSide, ComparisonSelection>
 
 export type ComparisonAction =
-  | { type: 'select'; side: ComparisonSide; id: number; pokemon?: Pokemon }
-  | { type: 'loaded'; side: ComparisonSide; id: number; pokemon: Pokemon }
+  | { type: 'select'; side: ComparisonSide; id: number; pokemon?: PokemonWithStats }
+  | { type: 'loaded'; side: ComparisonSide; id: number; pokemon: PokemonWithStats }
   | { type: 'failed'; side: ComparisonSide; id: number; error: string }
 
 export const initialComparisonState: ComparisonState = {

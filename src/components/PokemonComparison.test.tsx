@@ -10,13 +10,18 @@ const index: PokemonSummary[] = [
   { id: 125, name: 'electabuzz' }, { id: 252, name: 'treecko' },
 ]
 
-function pokemon(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites'> {
+function pokemon(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites' | 'stats'> {
   const summary = index.find((item) => item.id === id)
   if (!summary) throw new Error('Unknown fixture ID: ' + id)
   const types = id === 6 ? ['fire', 'flying'] : id === 1 ? ['grass', 'poison'] : ['electric']
   return {
     ...summary,
     types: types.map((name) => ({ type: { name, url: '/type/' + name } })),
+    stats: [
+      { base_stat: 45, stat: { name: 'hp' } }, { base_stat: 49, stat: { name: 'attack' } },
+      { base_stat: 49, stat: { name: 'defense' } }, { base_stat: 65, stat: { name: 'special-attack' } },
+      { base_stat: 65, stat: { name: 'special-defense' } }, { base_stat: 45, stat: { name: 'speed' } },
+    ],
     sprites: {
       front_default: '/sprite-' + id + '.png', front_shiny: null,
       other: { 'official-artwork': { front_default: id === 25 ? '/artwork-25.png' : null, front_shiny: null } },
@@ -80,7 +85,7 @@ test('selects by partial name and number and renders the API picture, name, numb
   expect(within(selected(2)).getByText('fire')).toBeTruthy()
   expect(within(selected(2)).getByText('flying')).toBeTruthy()
   expect(within(selected(2)).getByRole('img').getAttribute('src')).toBe('/sprite-6.png')
-  expect(screen.queryByRole('meter')).toBeNull()
+  expect(within(screen.getByRole('region', { name: 'Stats Comparison' })).getAllByRole('meter')).toHaveLength(12)
 })
 
 test('replaces either selected Pokémon without resetting the other side', async () => {
