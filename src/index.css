@@ -86,3 +86,11 @@ h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.055
 .pokemon-mega-forms label { font-size: 14px; font-weight: 600; }
 .pokemon-mega-forms select { min-width: 0; width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #20293a; font: inherit; font-size: 14px; }
 .pokemon-mega-forms select:focus-visible { outline: 2px solid #475569; outline-offset: 3px; }
+
+.pokemon-favorite { margin: 12px 0 16px; }
+.pokemon-favorite-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font: inherit; font-size: 14px; cursor: pointer; }
+.pokemon-favorite-heart { color: #b93650; font-size: 22px; line-height: 1; }
+.pokemon-favorite-button[aria-pressed="true"] { border-color: #b93650; background: #fff4f6; }
+.pokemon-favorite-button:focus-visible { outline: 2px solid #475569; outline-offset: 3px; }
+.pokemon-favorite-button:disabled { cursor: default; opacity: .6; }
+.pokemon-favorite-error { margin: 8px 0 0; color: #9f2943; font-size: 14px; }

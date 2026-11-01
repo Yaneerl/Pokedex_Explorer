@@ -1,8 +1,9 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { Link, MemoryRouter, Route, Routes } from 'react-router'
-import { afterEach, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import type { EvolutionChainLink, PokemonResponse, PokemonStatName } from '../types/pokemon.ts'
 import PokemonDetails from './PokemonDetails.tsx'
+import { FAVORITES_STORAGE_KEY } from '../utils/favorites.ts'
 
 const api = 'https://pokeapi.co/api/v2/'
 const statNames: PokemonStatName[] = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed']
@@ -88,6 +89,7 @@ function showPokemon(id = 6) {
   return render(
     <MemoryRouter initialEntries={['/pokemon/' + id]}>
       <Link to="/pokemon/25">Open Pikachu</Link>
+      <Link to="/pokemon/6">Open Charizard</Link>
       <Routes><Route path="/pokemon/:id" element={<PokemonDetails />} /></Routes>
     </MemoryRouter>,
   )
@@ -99,7 +101,12 @@ async function chooseMega(id: number) {
   return select
 }
 
-afterEach(() => vi.unstubAllGlobals())
+beforeEach(() => window.localStorage.removeItem(FAVORITES_STORAGE_KEY))
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+  window.localStorage.removeItem(FAVORITES_STORAGE_KEY)
+})
 
 test.each([
   { id: 6, labels: ['Regular', 'Mega Charizard X', 'Mega Charizard Y'] },
@@ -233,4 +240,41 @@ test('aborts pending Mega discovery on route navigation and ignores late respons
   expect(screen.queryByRole('combobox', { name: 'Mega Evolution' })).toBeNull()
   expect(screen.queryByRole('alert')).toBeNull()
   expect(screen.getByRole('heading', { name: 'Pikachu' })).toBeTruthy()
+})
+
+test('shares one Pokédex favorite across Regular, Mega X/Y and Shiny without duplicates', async () => {
+  mockApi()
+  showPokemon()
+  await chooseMega(10034)
+  fireEvent.click(screen.getByRole('button', { name: 'Add Charizard to favorites' }))
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6]')
+
+  fireEvent.click(screen.getByRole('button', { name: 'Shiny' }))
+  expect(screen.getByRole('img', { name: 'charizard-mega-x Shiny artwork' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Remove Charizard from favorites' }).getAttribute('aria-pressed')).toBe('true')
+  await chooseMega(10035)
+  expect(screen.getByRole('button', { name: 'Remove Charizard from favorites' })).toBeTruthy()
+  await chooseMega(6)
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6]')
+  fireEvent.click(screen.getByRole('button', { name: 'Remove Charizard from favorites' }))
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[]')
+})
+
+test('retains favorites through Router navigation, remount and a direct Mega URL using the species ID', async () => {
+  mockApi()
+  const view = showPokemon()
+  fireEvent.click(await screen.findByRole('button', { name: 'Add Charizard to favorites' }))
+  fireEvent.click(screen.getByRole('link', { name: 'Open Pikachu' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Add Pikachu to favorites' }))
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6,25]')
+
+  fireEvent.click(screen.getByRole('link', { name: 'Open Charizard' }))
+  expect(await screen.findByRole('button', { name: 'Remove Charizard from favorites' })).toBeTruthy()
+  view.unmount()
+  showPokemon(10034)
+  expect(await screen.findByRole('button', { name: 'Remove Charizard from favorites' })).toBeTruthy()
+  await chooseMega(10035)
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6,25]')
+  fireEvent.click(screen.getByRole('button', { name: 'Remove Charizard from favorites' }))
+  expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[25]')
 })

@@ -5,6 +5,7 @@ import toPokemonDetails from '../utils/toPokemonDetails.ts'
 import PokemonArtwork from './PokemonArtwork.tsx'
 import PokemonStats from './PokemonStats.tsx'
 import PokemonAbilities from './PokemonAbilities.tsx'
+import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
 
 interface PokemonFormsProps {
   pokemon: PokemonResponse
@@ -17,6 +18,8 @@ interface MegaFormsState {
 
 export default function PokemonForms({ pokemon }: PokemonFormsProps) {
   const selectId = useId()
+  const pokedexId = Number(pokemon.species.url.split('/').filter(Boolean).at(-1))
+  const speciesName = pokemon.species.name.charAt(0).toUpperCase() + pokemon.species.name.slice(1)
   const [selectedId, setSelectedId] = useState(pokemon.id)
   const [forms, setForms] = useState<MegaFormsState | null>(null)
 
@@ -49,6 +52,7 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
   return (
     <>
       <h2>{heading}</h2>
+      <PokemonFavoriteButton pokemonId={pokedexId} name={speciesName} />
       {!forms && <p role="status">Loading Mega forms...</p>}
       {forms?.error && <p role="alert">Error: {forms.error}</p>}
       {forms?.data && forms.data.megaForms.length > 0 && (
@@ -73,7 +77,7 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
         image={active.image}
         shinyImage={active.shinyImage}
       />
-      <p>Pokédex Number: #{String(pokemon.species.url.split('/').filter(Boolean).at(-1)).padStart(4, '0')}</p>
+      <p>Pokédex Number: #{String(pokedexId).padStart(4, '0')}</p>
       <p>Types: {active.types.join(', ')}</p>
       <dl className="pokemon-measurements" aria-label="Height and weight">
         <div className="pokemon-measurement">
