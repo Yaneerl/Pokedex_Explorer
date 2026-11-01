@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import type { Pokemon, PokemonResponse } from '../types/pokemon.ts'
+import type { Pokemon } from '../types/pokemon.ts'
 import { readFavorites } from '../utils/favorites.ts'
-import toPokemonCard from '../utils/toPokemonCard.ts'
+import loadFavoritePokemon from '../utils/loadFavoritePokemon.ts'
 import PokemonCard from './PokemonCard.tsx'
 import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
 
@@ -23,12 +23,7 @@ export default function PokemonFavorites() {
 
     async function loadFavorites(): Promise<void> {
       try {
-        const pokemon = await Promise.all(saved.ids.map(async (id) => {
-          const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + id, { signal: controller.signal })
-          if (!response.ok) throw new Error('Failed to load favorite Pokémon #' + id + '.')
-          const data: PokemonResponse = await response.json()
-          return toPokemonCard(data)
-        }))
+        const pokemon = await loadFavoritePokemon(saved.ids, controller.signal)
         if (!controller.signal.aborted) setResult({ pokemon, error: null })
       } catch (error) {
         if (!controller.signal.aborted) {

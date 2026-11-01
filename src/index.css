@@ -104,3 +104,27 @@ h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.055
 .pokemon-favorites-grid .pokemon-favorite { margin-bottom: 0; }
 .pokemon-favorites-grid .pokemon-favorite-button { max-width: 100%; padding: 8px; gap: 6px; font-size: 12px; text-align: left; }
 @media (max-width: 420px) { .pokemon-favorites-grid { grid-template-columns: 1fr; } }
+
+.app-navigation { display: flex; flex-wrap: wrap; gap: 8px; }
+.comparison-back-link { display: inline-block; margin-top: 8px; color: #475569; }
+.comparison-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.comparison-slot { min-width: 0; }
+.comparison-slot h2 { margin-top: 0; font-size: 22px; }
+.comparison-slot label { display: block; margin-bottom: 8px; font-size: 14px; }
+.comparison-slot input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #20293a; font: inherit; }
+.comparison-results { max-height: 220px; overflow-y: auto; margin: 8px 0 16px; padding: 0; list-style: none; }
+.comparison-results button { width: 100%; padding: 10px 12px; border: 1px solid #e7edf4; background: white; color: #475569; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.comparison-back-link:focus-visible, .comparison-slot input:focus-visible, .comparison-results button:focus-visible { outline: 2px solid #475569; outline-offset: 2px; }
+.comparison-pokemon { margin-top: 20px; }
+.comparison-pokemon .pokemon-placeholder, .comparison-pokemon img { width: 120px; height: 120px; }
+.comparison-empty { color: #64748b; font-size: 14px; }
+@media (max-width: 580px) { .comparison-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+.comparison-source { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.comparison-source button { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font: inherit; font-size: 14px; cursor: pointer; }
+.comparison-source button[aria-pressed="true"] { background: #e2e8f0; color: #20293a; border-color: #64748b; }
+.comparison-source button:focus-visible, .comparison-favorites button:focus-visible { outline: 2px solid #475569; outline-offset: 2px; }
+.comparison-favorites { max-height: 280px; overflow-y: auto; margin: 0 0 16px; padding: 0; list-style: none; }
+.comparison-favorites button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px; border: 1px solid #e7edf4; background: white; color: #475569; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.comparison-favorites img { flex-shrink: 0; object-fit: contain; }
+.comparison-favorite-placeholder { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; }

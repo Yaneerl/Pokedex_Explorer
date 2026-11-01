@@ -11,7 +11,7 @@ afterEach(() => {
   window.localStorage.removeItem(FAVORITES_STORAGE_KEY)
 })
 
-test('keeps catalog search, type, generation, classification, sorting and page after visiting Favorites', async () => {
+test.each(['Favorites', 'Pokémon Comparison'])('keeps catalog search, type, generation, classification, sorting and page after visiting %s', async (destination) => {
   const species = Array.from({ length: 45 }, (_, index) => ({
     name: 'pokemon-' + (index + 1), url: api + '/pokemon-species/' + (index + 1) + '/',
   }))
@@ -45,8 +45,9 @@ test('keeps catalog search, type, generation, classification, sorting and page a
   const before = Array.from(container.querySelectorAll('.pokemon-number'), (number) => number.textContent)
   expect(before).toHaveLength(20)
 
-  fireEvent.click(screen.getByRole('link', { name: 'Favorites' }))
-  await screen.findByRole('button', { name: 'View pokemon-25 details' })
+  fireEvent.click(screen.getByRole('link', { name: destination }))
+  if (destination === 'Favorites') await screen.findByRole('button', { name: 'View pokemon-25 details' })
+  else await screen.findByRole('heading', { name: 'Pokémon Comparison' })
   fireEvent.click(screen.getByRole('link', { name: '← Back to Pokédex' }))
   await screen.findByText('Showing 21–40 of 45 Pokémon')
   expect(screen.getByLabelText('Search Pokémon')).toHaveProperty('value', 'pokemon')

@@ -3,6 +3,7 @@ import { Link, Navigate, Route, Routes, useNavigate } from 'react-router'
 import PokemonList from './components/PokemonList.tsx'
 import PokemonDetails from './components/PokemonDetails.tsx'
 import PokemonFavorites from './components/PokemonFavorites.tsx'
+import PokemonComparison from './components/PokemonComparison.tsx'
 import toPokemonCard from './utils/toPokemonCard.ts'
 import PokemonFilters from './components/PokemonFilters.tsx'
 import PokemonPagination from './components/PokemonPagination.tsx'
@@ -351,6 +352,7 @@ export default function App() {
                 </p>
                 <nav className="app-navigation" aria-label="Main navigation">
                   <Link to="/favorites">Favorites</Link>
+                  <Link to="/compare">Pokémon Comparison</Link>
                 </nav>
               </header>
 
@@ -406,6 +408,10 @@ export default function App() {
               )}
             </>
           }
+        />
+        <Route
+          path="/compare"
+          element={<PokemonComparison pokemonIndex={speciesIndex} indexLoading={indexLoading} indexError={indexError} />}
         />
         <Route path="/favorites" element={<PokemonFavorites />} />
         <Route path="/pokemon/:id" element={<PokemonDetails />} />

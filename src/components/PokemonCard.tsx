@@ -1,5 +1,6 @@
 import type { KeyboardEvent, ReactNode } from 'react'
 import type { Pokemon } from '../types/pokemon.ts'
+import PokemonCardContent from './PokemonCardContent.tsx'
 
 interface PokemonCardProps {
   pokemon: Pokemon
@@ -19,38 +20,7 @@ export default function PokemonCard({ pokemon, onSelect, actions }: PokemonCardP
       }
     },
   }
-  const content = (
-    <>
-      <span className="pokemon-number">
-        #{String(pokemon.id).padStart(4, '0')}
-      </span>
-
-      <div className="pokemon-placeholder">
-        {pokemon.image ? (
-          <img
-            src={pokemon.image}
-            alt={`${pokemon.name} official artwork`}
-            width="76"
-            height="76"
-            loading="lazy"
-            style={{ objectFit: 'contain' }}
-          />
-        ) : (
-          <span aria-hidden="true">✦</span>
-        )}
-      </div>
-
-      <h3>{pokemon.name}</h3>
-
-      <div className="pokemon-types">
-        {pokemon.types.map((type) => (
-          <span className="type-chip" key={type}>
-            {type}
-          </span>
-        ))}
-      </div>
-    </>
-  )
+  const content = <PokemonCardContent pokemon={pokemon} />
 
   return (
     <li className="pokemon-card" {...(actions ? {} : selectionProps)}>
