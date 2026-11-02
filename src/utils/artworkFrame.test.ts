@@ -35,3 +35,8 @@ test.each([
 test('contains the original image when pixel measurement is unavailable', () => {
   expect(fitArtwork(FULL_ARTWORK_BOUNDS, 1, 300, 340)).toEqual({ left: 16, top: 36, width: 268, height: 268 })
 })
+
+
+test('supports a compact display inset while keeping its visible artwork centered', () => {
+  expect(fitArtwork(FULL_ARTWORK_BOUNDS, 1, 80, 160, 6)).toEqual({ left: 6, top: 46, width: 68, height: 68 })
+})

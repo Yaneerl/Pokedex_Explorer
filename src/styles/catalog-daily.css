@@ -1,0 +1,56 @@
+/* Header-only layout: filter controls, cards, shell and background keep their styles. */
+.app--home .catalog-header { grid-template-columns: minmax(0, 1fr) 224px; gap: 20px; align-items: center; }
+.app--home .catalog-title-panel { display: grid; grid-template-columns: minmax(180px, .85fr) minmax(280px, 1.15fr); align-items: center; gap: 18px; padding: 16px 20px; }
+.app--home .catalog-title-copy { min-width: 0; }
+.app--home .catalog-title-panel .intro { max-width: 29ch; }
+.app--home .catalog-navigation { gap: 10px; }
+.app--home .catalog-navigation .device-control { display: grid; grid-template-columns: 22px minmax(0, 1fr); min-height: 54px; gap: 12px; padding: 11px 14px; font-size: 13px; }
+.app--home .catalog-navigation .device-control-code { display: none; }
+.app--home .catalog-navigation .interface-icon { width: 22px; height: 22px; }
+.app--home .pokemon-of-the-day { position: relative; min-width: 0; min-height: 200px; padding: 10px; border: 1px solid #7897a8; border-radius: 10px; background: linear-gradient(135deg, #f5fcffed, #d7eaf2e8); box-shadow: inset 0 1px #fff, inset 0 -2px #789dad33, 0 2px 0 #587b8d26; }
+.app--home .pokemon-of-the-day::after { content: ''; position: absolute; right: 9px; top: 9px; width: 12px; height: 3px; border-radius: 2px; background: #a52d45; box-shadow: -17px 0 #557c90; }
+.app--home .daily-heading { display: flex; align-items: center; gap: 7px; margin: 0 36px 6px 0; color: #344f63; font-family: var(--device-font); font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+.app--home .daily-heading > span { flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: #438d9c; box-shadow: 0 0 0 2px #438d9c22; }
+.app--home .daily-content { display: grid; grid-template-columns: minmax(112px, 1fr) minmax(126px, 1fr); align-items: center; gap: 8px; min-height: 160px; }
+.app--home .daily-artwork { position: relative; display: grid; place-items: center; min-width: 0; height: 160px; overflow: hidden; isolation: isolate; }
+.app--home .daily-artwork::before { content: ''; position: absolute; z-index: -1; width: min(92%, 142px); aspect-ratio: 1; border: 1px solid var(--type-glow); border-radius: 50%; background: radial-gradient(circle, #fff, var(--type-surface) 58%, transparent 73%); box-shadow: inset 0 0 16px var(--type-glow); }
+.app--home .daily-artwork img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-width: none; object-fit: contain; object-position: center; }
+.app--home .daily-info { display: grid; justify-items: start; gap: 7px; min-width: 0; }
+.app--home .daily-number { color: #476276; font-family: ui-monospace, Consolas, monospace; font-size: 10px; letter-spacing: .09em; }
+.app--home .daily-info h3 { margin: 0; max-width: 100%; color: #203d50; font-family: var(--device-font); font-size: 19px; line-height: 1.12; text-transform: capitalize; overflow-wrap: anywhere; }
+.app--home .daily-types { display: flex; flex-wrap: wrap; gap: 5px; }
+.app--home .daily-types .pokemon-type-badge { gap: 4px; padding: 4px 5px; font-size: 10px; }
+.app--home .daily-types svg { width: 14px; height: 14px; }
+.app--home .daily-view { min-height: 44px; gap: 5px; padding: 7px 9px; font-size: 11px; white-space: nowrap; }
+.app--home .daily-view .interface-icon { width: 15px; height: 15px; }
+.app--home .daily-state { display: grid; place-content: center; justify-items: center; gap: 8px; min-height: 160px; padding: 10px; color: #40596d; font-size: 12px; line-height: 1.5; text-align: center; }
+.app--home .daily-state p { margin: 0; }
+.app--home .daily-state .device-control { padding: 6px 12px; font-size: 12px; }
+.app--home .daily-image-fallback { padding: 8px; color: #40596d; font-size: 11px; text-align: center; }
+.app--home .daily-storage-note { margin: 4px 0 0; color: #40596d; font-size: 10px; }
+@media (min-width: 901px) and (max-width: 1100px) {
+  .app--home .catalog-header { grid-template-columns: minmax(0, 1fr) 194px; gap: 16px; }
+  .app--home .catalog-title-panel { grid-template-columns: minmax(146px, .7fr) minmax(252px, 1.3fr); gap: 12px; padding: 16px; }
+  .app--home .catalog-navigation .device-control { font-size: 12px; gap: 9px; padding-inline: 10px; }
+}
+@media (max-width: 900px) {
+  .app--home .catalog-header { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .app--home .catalog-title-panel { grid-template-columns: minmax(160px, .8fr) minmax(260px, 1.2fr); }
+  .app--home .catalog-navigation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app--home .catalog-navigation .device-control { min-height: 48px; }
+}
+@media (max-width: 679px) {
+  .app--home .catalog-title-panel { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 18px 14px; }
+  .app--home .catalog-title-panel .intro { max-width: 40ch; }
+  .app--home .pokemon-of-the-day { width: 100%; }
+  .app--home .daily-content { grid-template-columns: minmax(108px, 1fr) minmax(126px, 1fr); }
+  .app--home .catalog-navigation { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 359px) {
+  .app--home .catalog-title-panel { padding-inline: 10px; }
+  .app--home .daily-content { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 5px; }
+  .app--home .daily-heading { font-size: 10px; }
+  .app--home .pokemon-of-the-day { padding: 9px 7px; }
+  .app--home .daily-view { font-size: 10px; padding-inline: 7px; }
+  .app--home .daily-view .interface-icon { display: none; }
+}

@@ -23,8 +23,8 @@ export function getArtworkBounds(pixels: Uint8ClampedArray, width: number, heigh
 }
 
 /** Uniformly contain and center the visible artwork within a padded display. */
-export function fitArtwork(bounds: ArtworkBounds, aspectRatio: number, frameWidth: number, frameHeight: number) {
-  const width = Math.min(Math.max(1, frameWidth - 32) / bounds.width, Math.max(1, frameHeight - 32) * aspectRatio / bounds.height)
+export function fitArtwork(bounds: ArtworkBounds, aspectRatio: number, frameWidth: number, frameHeight: number, inset = 16) {
+  const width = Math.min(Math.max(1, frameWidth - inset * 2) / bounds.width, Math.max(1, frameHeight - inset * 2) * aspectRatio / bounds.height)
   const height = width / aspectRatio
   return {
     width,

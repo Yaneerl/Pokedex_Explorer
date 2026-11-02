@@ -10,6 +10,7 @@ import toPokemonCard from './utils/toPokemonCard.ts'
 import PokemonFilters from './components/PokemonFilters.tsx'
 import PokemonPagination from './components/PokemonPagination.tsx'
 import usePokemonClassification from './hooks/usePokemonClassification.ts'
+import usePokemonOfTheDay from './hooks/usePokemonOfTheDay.ts'
 import searchPokemon from './utils/searchPokemon.ts'
 import { filterPokemonByGeneration, filterPokemonByType } from './utils/filterPokemon.ts'
 import type {
@@ -336,6 +337,11 @@ export default function App() {
     (selectedClassification !== 'all' && classificationLoading) ||
     searchPending || loading || (!currentError && !pageDataReady)
 
+  const daily = usePokemonOfTheDay({
+    index: speciesIndex, indexLoading, indexError, cachedPokemon: pokemonList,
+    catalogLoading: isLoading, enabled: isHome,
+  })
+
   const firstResult = (page - 1) * PAGE_SIZE + 1
   const lastResult = Math.min(page * PAGE_SIZE, filteredSpecies.length)
 
@@ -346,7 +352,7 @@ export default function App() {
           path="/"
           element={
             <PokedexFrame>
-              <CatalogHeader />
+              <CatalogHeader daily={daily} />
 
               <PokemonFilters
                 search={search}

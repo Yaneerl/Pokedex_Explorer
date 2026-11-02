@@ -7,6 +7,7 @@ interface PokemonArtworkImageProps {
   source: string
   alt: string
   onError: () => void
+  inset?: number
 }
 interface ImageMeasurement { bounds: ArtworkBounds; aspectRatio: number }
 
@@ -39,7 +40,7 @@ function measureImage(image: HTMLImageElement): ImageMeasurement {
 }
 
 /** Center the visible silhouette; transparent PNG padding never becomes an anchor. */
-export default function PokemonArtworkImage({ source, alt, onError }: PokemonArtworkImageProps) {
+export default function PokemonArtworkImage({ source, alt, onError, inset = 16 }: PokemonArtworkImageProps) {
   const imageRef = useRef<HTMLImageElement>(null)
   const [measurement, setMeasurement] = useState<ImageMeasurement | null>(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
@@ -67,7 +68,7 @@ export default function PokemonArtworkImage({ source, alt, onError }: PokemonArt
     if (image.naturalWidth > 0 && image.naturalHeight > 0) setMeasurement(measureImage(image))
   }
   const style = measurement && size.width > 0 && size.height > 0
-    ? fitArtwork(measurement.bounds, measurement.aspectRatio, size.width, size.height)
+    ? fitArtwork(measurement.bounds, measurement.aspectRatio, size.width, size.height, inset)
     : undefined
 
   return <img ref={imageRef} key={readable ? 'readable' : 'fallback'} className="pokemon-artwork-image"
