@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { PokemonWithStats } from '../types/pokemon.ts'
+import type { PokemonResponse, PokemonWithStats } from '../types/pokemon.ts'
 import { readFavorites } from '../utils/favorites.ts'
 import toPokemonWithStats from '../utils/toPokemonWithStats.ts'
 import loadFavoritePokemon from '../utils/loadFavoritePokemon.ts'
@@ -10,7 +10,7 @@ export interface FavoritePokemonResult {
   error: string | null
 }
 
-export default function useFavoritePokemon(enabled: boolean): FavoritePokemonResult {
+export default function useFavoritePokemon(enabled: boolean, onPokemonLoaded?: (pokemon: PokemonResponse) => void): FavoritePokemonResult {
   const [saved] = useState(readFavorites)
   const [result, setResult] = useState<{ pokemon: PokemonWithStats[]; error: string | null } | null>(null)
 
@@ -20,6 +20,7 @@ export default function useFavoritePokemon(enabled: boolean): FavoritePokemonRes
     async function load(): Promise<void> {
       try {
         const data = await loadFavoritePokemon(saved.ids, controller.signal)
+        if (!controller.signal.aborted && onPokemonLoaded) data.forEach(onPokemonLoaded)
         const pokemon = data.map(toPokemonWithStats)
         if (!controller.signal.aborted) setResult({ pokemon, error: null })
       } catch (error) {
@@ -31,7 +32,7 @@ export default function useFavoritePokemon(enabled: boolean): FavoritePokemonRes
     }
     load()
     return () => controller.abort()
-  }, [enabled, saved])
+  }, [enabled, saved, onPokemonLoaded])
 
   const error = saved.error ?? result?.error ?? null
   return { pokemon: result?.pokemon ?? [], error, loading: enabled && !error && saved.ids.length > 0 && !result }

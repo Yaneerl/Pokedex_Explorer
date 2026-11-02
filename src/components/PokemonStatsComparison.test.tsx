@@ -164,3 +164,37 @@ test('rejects incomplete API stats without replacing the last valid comparison',
   expect((await slot(1).findByRole('alert')).textContent).toContain('All six base stats are required')
   expect(row('HP').getByRole('meter', { name: 'bulbasaur HP' })).toBeTruthy()
 })
+
+test('swaps loaded Pokémon and stats without fetching, and disables Swap for empty or pending selections', async () => {
+  const fetchMock = mockApi()
+  showComparison()
+  const swap = screen.getByRole('button', { name: 'Swap Pokémon' })
+  expect(swap.hasAttribute('disabled')).toBe(true)
+  choose(1, 'bulbasaur')
+  await slot(1).findByRole('article')
+  expect(swap.hasAttribute('disabled')).toBe(true)
+  choose(2, 'charizard')
+  await slot(2).findByRole('article')
+  expect(swap.hasAttribute('disabled')).toBe(false)
+  const before = fetchMock.mock.calls.length
+  fireEvent.click(swap)
+  expect(slot(1).getByRole('heading', { name: 'charizard' })).toBeTruthy()
+  expect(slot(2).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
+  expect(row('HP').getAllByRole('meter').map((meter) => meter.getAttribute('aria-label'))).toEqual(['charizard HP', 'bulbasaur HP'])
+  const summaries = comparison().getByLabelText('Base stats summary').children
+  expect(summaries[0]?.textContent).toContain('Total Base Stats: 534')
+  expect(summaries[1]?.textContent).toContain('Total Base Stats: 318')
+  expect(fetchMock).toHaveBeenCalledTimes(before)
+
+  let finish: ((response: Response) => void) | undefined
+  fetchMock.mockImplementationOnce(() => new Promise<Response>((resolve) => { finish = resolve }))
+  choose(1, 'pikachu')
+  expect(swap.hasAttribute('disabled')).toBe(true)
+  fireEvent.click(swap)
+  expect(slot(2).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
+  await act(async () => { finish?.(Response.json(pokemon(25))) })
+  await slot(1).findByRole('heading', { name: 'pikachu' })
+  expect(swap.hasAttribute('disabled')).toBe(false)
+  expect(slot(2).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
+  expect(fetchMock).toHaveBeenCalledTimes(before + 1)
+})

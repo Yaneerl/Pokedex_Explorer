@@ -17,7 +17,7 @@ export default function PokemonStatComparisonRow({ row, leftName, rightName }: P
           const name = side === 'left' ? leftName : rightName
           const level = row.leader === 'tie' ? 'tie' : row.leader === side ? 'leading' : 'trailing'
           return (
-            <div key={side} className={'stat-comparison-value stat-comparison-value--' + level}>
+            <div key={side} className={'stat-comparison-value stat-comparison-value--' + level + ' stat-comparison-value--' + side}>
               <div className="stat-comparison-label"><span>{name}</span><strong>{row[side]}</strong></div>
               <div className="stat-comparison-track" role="meter" aria-label={name + ' ' + label} aria-valuemin={0} aria-valuemax={STAT_SCALE_MAX} aria-valuenow={row[side]}>
                 <div className="stat-comparison-fill" style={{ width: row[side] / STAT_SCALE_MAX * 100 + '%' }} />

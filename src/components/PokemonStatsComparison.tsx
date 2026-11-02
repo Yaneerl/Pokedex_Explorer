@@ -14,9 +14,11 @@ export default function PokemonStatsComparison({ left, right }: PokemonStatsComp
   const comparison = comparePokemonStats(left.stats, right.stats)
   return (
     <section className="stats-comparison" aria-labelledby={headingId}>
-      <h2 id={headingId}>Stats Comparison</h2>
+      <div className="stats-comparison-header">
+        <h2 id={headingId}>Stats Comparison</h2>
+        <p className="stats-comparison-scale">Shared bar scale: 0–{STAT_SCALE_MAX}</p>
+      </div>
       <p className="stats-comparison-note">Base Stats only. This comparison does not predict the winner of a real battle.</p>
-      <p className="stats-comparison-scale">Shared bar scale: 0–{STAT_SCALE_MAX}</p>
       <ul className="stats-comparison-list">
         {comparison.rows.map((row) => <PokemonStatComparisonRow key={row.name} row={row} leftName={left.name} rightName={right.name} />)}
       </ul>
