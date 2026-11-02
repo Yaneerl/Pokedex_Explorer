@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import type { PokemonClassification } from '../types/pokemon.ts'
+import PokemonArtworkScene from './PokemonArtworkScene.tsx'
 import PokemonArtworkImage from './PokemonArtworkImage.tsx'
 
 interface PokemonArtworkProps {
@@ -6,26 +8,29 @@ interface PokemonArtworkProps {
   image: string | null
   shinyImage: string | null
   hero?: boolean
+  classification?: PokemonClassification
 }
 
 type ArtworkVariant = 'normal' | 'shiny'
 
-export default function PokemonArtwork({ name, image, shinyImage, hero = false }: PokemonArtworkProps) {
+export default function PokemonArtwork({ name, image, shinyImage, hero = false, classification = 'regular' }: PokemonArtworkProps) {
   const [variant, setVariant] = useState<ArtworkVariant>('normal')
   const [failedImage, setFailedImage] = useState<string | null>(null)
   const source = variant === 'shiny' ? shinyImage : image
   const label = variant === 'shiny' ? 'Shiny' : 'Normal'
 
+  const preview = source && source !== failedImage ? (
+    hero ? <PokemonArtworkImage key={source} source={source} alt={name + ' ' + label + ' artwork'} inset={28} onError={() => setFailedImage(source)} /> :
+    <img key={source} src={source} alt={name + ' ' + label + ' artwork'} width="220" height="220" onError={() => setFailedImage(source)} />
+  ) : <p role="status">{label} image is not available for this Pokémon.</p>
+
   return (
     <div className="pokemon-artwork">
-      <div className="pokemon-artwork-preview">
-        {source && source !== failedImage ? (
-          hero ? <PokemonArtworkImage key={source} source={source} alt={name + ' ' + label + ' artwork'} onError={() => setFailedImage(source)} /> :
-          <img key={source} src={source} alt={name + ' ' + label + ' artwork'} width="220" height="220" onError={() => setFailedImage(source)} />
-        ) : (
-          <p role="status">{label} image is not available for this Pokémon.</p>
-        )}
-      </div>
+      {hero ? (
+        <PokemonArtworkScene key={source} classification={classification} interactive={Boolean(source && source !== failedImage)}>
+          {preview}
+        </PokemonArtworkScene>
+      ) : <div className="pokemon-artwork-preview">{preview}</div>}
       <div className="pokemon-artwork-toggle" role="group" aria-label="Pokémon appearance">
         <button type="button" aria-pressed={variant === 'normal'} onClick={() => setVariant('normal')}>Normal</button>
         <button type="button" aria-pressed={variant === 'shiny'} onClick={() => setVariant('shiny')}>Shiny</button>

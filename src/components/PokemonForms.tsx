@@ -75,6 +75,7 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
       }>
         <PokemonFavoriteButton pokemonId={pokedexId} name={speciesName} />
       </PokemonHero>
+      <PokemonEvolution speciesUrl={pokemon.species.url} speciesState={species} />
       <div className="pokemon-details-data-grid">
         <section className="pokemon-physical-panel" aria-labelledby="pokemon-physical-heading">
           <h3 id="pokemon-physical-heading">Height &amp; Weight</h3>
@@ -86,7 +87,6 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
         <PokemonStats stats={active.stats} />
         <PokemonAbilities abilities={active.abilities} />
       </div>
-      <PokemonEvolution speciesUrl={pokemon.species.url} speciesState={species} />
     </div>
   )
 }

@@ -126,7 +126,11 @@ export interface GenerationResults {
   ids: Set<number>
 }
 
+export type PokemonClassification = 'regular' | 'legendary' | 'mythical'
+
 export interface PokemonSpeciesResponse {
+  is_legendary?: boolean
+  is_mythical?: boolean
   genera?: { genus: string; language: NamedApiResource }[]
   flavor_text_entries?: { flavor_text: string; language: NamedApiResource }[]
   varieties: { is_default: boolean; pokemon: NamedApiResource }[]

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import type { PokemonResponse } from '../types/pokemon.ts'
+import PokedexFrame from './PokedexFrame.tsx'
 import PokemonForms from './PokemonForms.tsx'
 import '../styles/pokemon-details.css'
 
@@ -56,17 +57,21 @@ export default function PokemonDetails() {
   const pokemon = currentDetails?.pokemon
 
   return (
-    <aside className="pokemon-details">
-      <button type="button" onClick={() => navigate('/')}>
-        ← Back to Pokédex
-      </button>
+    <section className="pokemon-details" aria-label="Pokémon details">
+      <PokedexFrame>
+        <div className="pokemon-details-content">
+          <button type="button" onClick={() => navigate('/')}>
+            ← Back to Pokédex
+          </button>
 
-      {loading && <p role="status">Loading Pokémon details...</p>}
-      {error && <p role="alert">Error: {error}</p>}
+          {loading && <p role="status">Loading Pokémon details...</p>}
+          {error && <p role="alert">Error: {error}</p>}
 
-      {!loading && !error && pokemon && (
-        <PokemonForms key={pokemon.id} pokemon={pokemon} />
-      )}
-    </aside>
+          {!loading && !error && pokemon && (
+            <PokemonForms key={pokemon.id} pokemon={pokemon} />
+          )}
+        </div>
+      </PokedexFrame>
+    </section>
   )
 }
