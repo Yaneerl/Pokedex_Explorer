@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import type { PokemonResponse } from '../types/pokemon.ts'
 import PokemonForms from './PokemonForms.tsx'
-import PokemonEvolution from './PokemonEvolution.tsx'
+import '../styles/pokemon-details.css'
 
 interface PokemonDetailsState {
   id: string
@@ -65,10 +65,7 @@ export default function PokemonDetails() {
       {error && <p role="alert">Error: {error}</p>}
 
       {!loading && !error && pokemon && (
-        <>
-          <PokemonForms key={pokemon.id} pokemon={pokemon} />
-          <PokemonEvolution speciesUrl={pokemon.species.url} />
-        </>
+        <PokemonForms key={pokemon.id} pokemon={pokemon} />
       )}
     </aside>
   )

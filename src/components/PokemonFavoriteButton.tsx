@@ -1,3 +1,4 @@
+import InterfaceIcon from './InterfaceIcon.tsx'
 import { useState } from 'react'
 import { readFavorites, setFavorite, writeFavorites } from '../utils/favorites.ts'
 import type { FavoriteIds } from '../utils/favorites.ts'
@@ -6,9 +7,10 @@ interface PokemonFavoriteButtonProps {
   pokemonId: number
   name: string
   onChange?: (ids: FavoriteIds) => void
+  compact?: boolean
 }
 
-export default function PokemonFavoriteButton({ pokemonId, name, onChange }: PokemonFavoriteButtonProps) {
+export default function PokemonFavoriteButton({ pokemonId, name, onChange, compact = false }: PokemonFavoriteButtonProps) {
   const [favorites, setFavorites] = useState(readFavorites)
   const isFavorite = favorites.ids.includes(pokemonId)
   const label = isFavorite ? 'Remove ' + name + ' from favorites' : 'Add ' + name + ' to favorites'
@@ -27,7 +29,7 @@ export default function PokemonFavoriteButton({ pokemonId, name, onChange }: Pok
   }
 
   return (
-    <div className="pokemon-favorite">
+    <div className={compact ? 'pokemon-favorite pokemon-favorite--compact' : 'pokemon-favorite'}>
       <button
         type="button"
         className="pokemon-favorite-button"
@@ -36,8 +38,12 @@ export default function PokemonFavoriteButton({ pokemonId, name, onChange }: Pok
         disabled={!Number.isSafeInteger(pokemonId) || pokemonId < 1}
         onClick={toggleFavorite}
       >
-        <span className="pokemon-favorite-heart" aria-hidden="true">{isFavorite ? '♥' : '♡'}</span>
-        <span>{isFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+        {compact ? <InterfaceIcon name="heart" /> : (
+          <>
+            <span className="pokemon-favorite-heart" aria-hidden="true">{isFavorite ? '♥' : '♡'}</span>
+            <span>{isFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+          </>
+        )}
       </button>
       {favorites.error && <p className="pokemon-favorite-error" role="alert">{favorites.error}</p>}
     </div>

@@ -1,3 +1,4 @@
+import InterfaceIcon from './InterfaceIcon.tsx'
 import { GENERATIONS, POKEMON_TYPES } from '../types/pokemon.ts'
 import type {
   ClassificationFilter, GenerationFilter, SortOrder, TypeFilter,
@@ -38,80 +39,85 @@ export default function PokemonFilters({
     sortBy !== 'id-asc'
 
   return (
-    <section className="search-section" aria-label="Pokémon filters">
-      <div className="filter-field">
-        <label htmlFor="pokemon-search">Search Pokémon</label>
-        <input
-          id="pokemon-search"
-          type="search"
-          placeholder="Search by name or number..."
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-        />
+    <section className="search-section catalog-filters" aria-label="Pokémon filters">
+      <div className="catalog-panel-heading">
+        <span className="catalog-zone" aria-hidden="true">02</span>
+        <h2>Search &amp; Filters</h2>
       </div>
+      <div className="catalog-filter-grid">
+        <div className="filter-field filter-field--search">
+          <label htmlFor="pokemon-search"><InterfaceIcon name="search" />Search Pokémon</label>
+          <input
+            id="pokemon-search"
+            type="search"
+            placeholder="Search by name or number..."
+            value={search}
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
+        </div>
 
-      <div className="filter-field">
-        <label htmlFor="pokemon-type">Pokémon Type</label>
-        <select
-          id="pokemon-type"
-          value={selectedType}
-          onChange={(event) => onTypeChange(event.target.value as TypeFilter)}
-        >
-          <option value="all">All Types</option>
-          {POKEMON_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </option>
-          ))}
-        </select>
+        <div className="filter-field">
+          <label htmlFor="pokemon-type"><InterfaceIcon name="filter" />Pokémon Type</label>
+          <select
+            id="pokemon-type"
+            value={selectedType}
+            onChange={(event) => onTypeChange(event.target.value as TypeFilter)}
+          >
+            <option value="all">All Types</option>
+            {POKEMON_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-field">
+          <label htmlFor="pokemon-generation"><InterfaceIcon name="layers" />Generation</label>
+          <select
+            id="pokemon-generation"
+            value={selectedGeneration}
+            onChange={(event) => onGenerationChange(event.target.value as GenerationFilter)}
+          >
+            <option value="all">All Generations</option>
+            {GENERATIONS.map((generation) => (
+              <option key={generation} value={String(generation)}>
+                Generation {generation}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-field">
+          <label htmlFor="pokemon-classification"><InterfaceIcon name="classification" />Classification</label>
+          <select
+            id="pokemon-classification"
+            value={selectedClassification}
+            onChange={(event) => onClassificationChange(event.target.value as ClassificationFilter)}
+          >
+            <option value="all">All Pokémon</option>
+            <option value="regular">Regular (not Legendary/Mythical)</option>
+            <option value="legendary">Legendary</option>
+            <option value="mythical">Mythical</option>
+          </select>
+        </div>
+
+        <div className="filter-field">
+          <label htmlFor="pokemon-sort"><InterfaceIcon name="sort" />Sort By</label>
+          <select
+            id="pokemon-sort"
+            value={sortBy}
+            onChange={(event) => onSortChange(event.target.value as SortOrder)}
+          >
+            <option value="id-asc">Pokédex Number: Low to High</option>
+            <option value="id-desc">Pokédex Number: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+          </select>
+        </div>
       </div>
-
-      <div className="filter-field">
-        <label htmlFor="pokemon-generation">Generation</label>
-        <select
-          id="pokemon-generation"
-          value={selectedGeneration}
-          onChange={(event) => onGenerationChange(event.target.value as GenerationFilter)}
-        >
-          <option value="all">All Generations</option>
-          {GENERATIONS.map((generation) => (
-            <option key={generation} value={String(generation)}>
-              Generation {generation}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="filter-field">
-        <label htmlFor="pokemon-classification">Classification</label>
-        <select
-          id="pokemon-classification"
-          value={selectedClassification}
-          onChange={(event) => onClassificationChange(event.target.value as ClassificationFilter)}
-        >
-          <option value="all">All Pokémon</option>
-          <option value="regular">Regular (not Legendary/Mythical)</option>
-          <option value="legendary">Legendary</option>
-          <option value="mythical">Mythical</option>
-        </select>
-      </div>
-
-      <div className="filter-field">
-        <label htmlFor="pokemon-sort">Sort By</label>
-        <select
-          id="pokemon-sort"
-          value={sortBy}
-          onChange={(event) => onSortChange(event.target.value as SortOrder)}
-        >
-          <option value="id-asc">Pokédex Number: Low to High</option>
-          <option value="id-desc">Pokédex Number: High to Low</option>
-          <option value="name-asc">Name: A to Z</option>
-          <option value="name-desc">Name: Z to A</option>
-        </select>
-      </div>
-
-      <button type="button" onClick={onReset} disabled={!hasFilters}>
-        Reset Filters
+      <button className="device-control catalog-reset" type="button" onClick={onReset} disabled={!hasFilters}>
+        <InterfaceIcon name="reset" />Reset Filters
       </button>
     </section>
   )

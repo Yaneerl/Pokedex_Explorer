@@ -1,3 +1,4 @@
+import InterfaceIcon from './InterfaceIcon.tsx'
 
 interface PokemonPaginationProps {
   page: number
@@ -19,11 +20,12 @@ export default function PokemonPagination({
   return (
     <nav className="pagination" aria-label="Pokémon pages">
       <button
+        className="device-control"
         type="button"
         disabled={page === 1}
         onClick={onPrevious}
       >
-        Previous
+        <InterfaceIcon name="previous" />Previous
       </button>
 
       <span>
@@ -31,11 +33,12 @@ export default function PokemonPagination({
       </span>
 
       <button
+        className="device-control device-control--primary"
         type="button"
         disabled={page >= totalPages}
         onClick={onNext}
       >
-        Next
+        Next<InterfaceIcon name="next" />
       </button>
     </nav>
   )

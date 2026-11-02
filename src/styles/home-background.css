@@ -1,0 +1,43 @@
+/* One SVG tile per 32-second cycle: a continuous downward movement of 5px/s. */
+.pokedex-screen { --home-pattern-height: 160px; --home-pattern-duration: 32s; }
+.pokedex-screen::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--home-pattern-height)) 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/home-pattern.svg') repeat;
+  background-size: 240px var(--home-pattern-height);
+  animation: home-pattern-drift var(--home-pattern-duration) linear infinite;
+  will-change: transform;
+}
+@keyframes home-pattern-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, var(--home-pattern-height), 0); }
+}
+
+/* Shared screen sections rather than individual white panels. */
+.app--home .app-header { margin-bottom: var(--space-6); }
+.app--home h1 { font-size: clamp(1.85rem, 5vw, 3.5rem); color: #142f42; }
+.app--home .eyebrow { color: #224b5d; }
+.app--home .intro, .app--home .list-heading span { color: #314e60; }
+.app--home .search-section { padding: var(--space-5) 0; border-block: 1px solid #47728666; }
+.app--home .filter-field { display: grid; grid-template-columns: minmax(120px, 160px) minmax(0, 1fr); align-items: center; gap: var(--space-3); max-width: 600px; }
+.app--home .filter-field label { margin: 0; }
+.app--home .filter-field input, .app--home .filter-field select { width: 100%; }
+.app--home .search-section > button { margin-top: var(--space-1); }
+.app--home .list-heading { flex-wrap: wrap; gap: var(--space-2); padding: 0 0 var(--space-3); border-bottom: 1px solid #47728666; }
+.app--home .results-count { color: #213e50; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.app--home .pokemon-card { background: #f5fcff; border-color: #476c7f70; box-shadow: 0 2px 0 #fff8, 0 5px 12px #12334616; }
+.app--home .pagination { padding-top: var(--space-5); border-top: 1px solid #47728666; }
+.pokedex-screen-content > [role='status'], .pokedex-screen-content > [role='alert'], .pokedex-screen-content > p:not(.results-count) { padding: var(--space-3); border: 1px solid #8ba7b5; border-radius: var(--radius-small); background: #f0fbff; }
+@media (max-width: 599px) {
+  .app--home .filter-field { grid-template-columns: 1fr; gap: var(--space-2); }
+  .app--home .pokemon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 389px) {
+  .app--home .pokemon-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pokedex-screen::before { animation: none; transform: none; will-change: auto; }
+}

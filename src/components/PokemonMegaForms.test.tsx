@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { Link, MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import type { EvolutionChainLink, PokemonResponse, PokemonStatName } from '../types/pokemon.ts'
+import type { EvolutionChainLink, PokemonResponse, PokemonSpeciesResponse, PokemonStatName } from '../types/pokemon.ts'
 import PokemonDetails from './PokemonDetails.tsx'
 import { FAVORITES_STORAGE_KEY } from '../utils/favorites.ts'
 
@@ -134,7 +134,7 @@ test('switches Regular to Mega X/Y and back, updating all stats, types, abilitie
   await chooseMega(10034)
   expect(screen.getByRole('heading', { name: 'Mega Charizard X' })).toBeTruthy()
   expect(screen.getAllByRole('meter').map((meter) => meter.getAttribute('aria-valuenow'))).toEqual(['78', '130', '111', '130', '85', '100'])
-  expect(screen.getByText('Types: fire, dragon')).toBeTruthy()
+  expect(Array.from(screen.getByRole('group', { name: 'Pokémon types' }).querySelectorAll('.pokemon-type-badge > span'), (badge) => badge.textContent)).toEqual(["fire","dragon"])
   expect(screen.getByText('Tough Claws')).toBeTruthy()
   expect(screen.queryByText('Blaze')).toBeNull()
   expect(screen.getByText('1.7 m')).toBeTruthy()
@@ -144,7 +144,7 @@ test('switches Regular to Mega X/Y and back, updating all stats, types, abilitie
 
   await chooseMega(10035)
   expect(screen.getByText('Drought')).toBeTruthy()
-  expect(screen.getByText('Types: fire, flying')).toBeTruthy()
+  expect(Array.from(screen.getByRole('group', { name: 'Pokémon types' }).querySelectorAll('.pokemon-type-badge > span'), (badge) => badge.textContent)).toEqual(["fire","flying"])
   expect(screen.getByRole('meter', { name: 'Special Attack' }).getAttribute('aria-valuenow')).toBe('159')
   expect(screen.getByText('100.5 kg')).toBeTruthy()
 
@@ -165,7 +165,7 @@ test('uses Mega-specific height, weight, types and abilities for Mewtwo X', asyn
   await chooseMega(10043)
   expect(screen.getByText('2.3 m')).toBeTruthy()
   expect(screen.getByText('127.0 kg')).toBeTruthy()
-  expect(screen.getByText('Types: psychic, fighting')).toBeTruthy()
+  expect(Array.from(screen.getByRole('group', { name: 'Pokémon types' }).querySelectorAll('.pokemon-type-badge > span'), (badge) => badge.textContent)).toEqual(["psychic","fighting"])
   expect(screen.getByText('Steadfast')).toBeTruthy()
   expect(screen.getByRole('meter', { name: 'Attack' }).getAttribute('aria-valuenow')).toBe('190')
   await waitFor(() => expect(screen.queryByRole('region', { name: 'Evolution Chain' })).toBeNull())
@@ -277,4 +277,39 @@ test('retains favorites through Router navigation, remount and a direct Mega URL
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6,25]')
   fireEvent.click(screen.getByRole('button', { name: 'Remove Charizard from favorites' }))
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[25]')
+})
+
+
+test('the original English species entry survives Mega X/Y changes using one shared species request', async () => {
+  const db = fixtures()
+  const url = api + 'pokemon-species/6/'
+  db[url] = { ...(db[url] as PokemonSpeciesResponse),
+    genera: [{ genus: 'Flame Pokémon', language: { name: 'en', url: '/language/en/' } }],
+    flavor_text_entries: [{ flavor_text: 'Spits fire that is hot enough to melt boulders.', language: { name: 'en', url: '/language/en/' } }],
+  }
+  const fetchMock = mockApi(db)
+  showPokemon()
+  await chooseMega(10034)
+  expect(screen.getByText('Flame Pokémon')).toBeTruthy()
+  expect(screen.getByText('Spits fire that is hot enough to melt boulders.')).toBeTruthy()
+  await chooseMega(10035)
+  expect(screen.getByText('Flame Pokémon')).toBeTruthy()
+  expect(fetchMock.mock.calls.filter(([input]) => String(input) === url)).toHaveLength(1)
+})
+
+
+test('keeps Normal/Shiny/Mega below the artwork while preserving the information and favorite panel', async () => {
+  mockApi()
+  showPokemon()
+  const select = await screen.findByRole('combobox', { name: 'Mega Evolution' })
+  const display = select.closest('.pokemon-hero-display')
+  expect(display?.querySelector('.pokemon-artwork-preview img')).not.toBeNull()
+  expect(display?.contains(screen.getByRole('button', { name: 'Normal' }))).toBe(true)
+  expect(display?.contains(screen.getByRole('button', { name: 'Shiny' }))).toBe(true)
+  const favorite = screen.getByRole('button', { name: 'Add Charizard to favorites' })
+  expect(favorite.closest('.pokemon-hero-info')).not.toBeNull()
+  expect(display?.contains(favorite)).toBe(false)
+  expect(document.querySelector('[class*="podium"]')).toBeNull()
+  await chooseMega(10034)
+  expect(screen.getByRole('heading', { name: 'Mega Charizard X' }).closest('.pokemon-hero-info')).not.toBeNull()
 })

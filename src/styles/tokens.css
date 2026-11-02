@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+
+  /* Brand and readable surfaces; type-specific card colors are a later step. */
+  --color-brand: #c6283d;
+  --color-brand-strong: #a91f32;
+  --color-brand-soft: #fff1f3;
+  --color-canvas: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef2f6;
+  --color-text: #162233;
+  --color-text-muted: #526174;
+  --color-border: #dce3ea;
+  --color-control-border: #7b8798;
+  --color-focus: #006f9e;
+  --color-disabled-text: #687587;
+  --color-disabled-surface: #edf0f4;
+  --color-disabled-border: #c5cdd7;
+  --color-error: #a5273e;
+  --color-hidden-surface: #f1eafa;
+  --color-hidden-text: #6d4c91;
+  --color-artwork-surface: #f0f5ff;
+  --color-stat-low: #e25065;
+  --color-stat-medium: #d9ad32;
+  --color-stat-high: #4b9e72;
+  --color-comparison-leading: #63a687;
+  --color-comparison-trailing: #879fbc;
+  --color-comparison-tie: #c3a65e;
+
+  --font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-display: clamp(2.125rem, 6vw, 3.875rem);
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 800;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.15;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-small: 0.5rem;
+  --radius-control: 0.625rem;
+  --radius-panel: 1rem;
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+  --control-height: 2.75rem;
+  --shadow-card: 0 7px 30px #16223308;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+}

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
 import PokemonList from './components/PokemonList.tsx'
+import PokedexFrame from './components/PokedexFrame.tsx'
+import CatalogHeader from './components/CatalogHeader.tsx'
 import PokemonDetails from './components/PokemonDetails.tsx'
 import PokemonFavorites from './components/PokemonFavorites.tsx'
 import PokemonComparison from './components/PokemonComparison.tsx'
@@ -25,6 +27,7 @@ function getPokemonId(url: string): number {
 
 export default function App() {
   const navigate = useNavigate()
+  const isHome = useLocation().pathname === '/'
   const [speciesIndex, setSpeciesIndex] = useState<PokemonSummary[]>([])
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([])
 
@@ -337,24 +340,13 @@ export default function App() {
   const lastResult = Math.min(page * PAGE_SIZE, filteredSpecies.length)
 
   return (
-    <main className="app">
+    <main className={isHome ? 'app app--home' : 'app'}>
       <Routes>
         <Route
           path="/"
           element={
-            <>
-              <header className="app-header">
-                <p className="eyebrow">YOUR DIGITAL POKÉDEX</p>
-                <h1>PokéDex Explorer</h1>
-                <p className="intro">
-                  Discover Pokémon from every generation.
-                  Powered by PokéAPI.
-                </p>
-                <nav className="app-navigation" aria-label="Main navigation">
-                  <Link to="/favorites">Favorites</Link>
-                  <Link to="/compare">Pokémon Comparison</Link>
-                </nav>
-              </header>
+            <PokedexFrame>
+              <CatalogHeader />
 
               <PokemonFilters
                 search={search}
@@ -406,7 +398,7 @@ export default function App() {
                   )}
                 </>
               )}
-            </>
+            </PokedexFrame>
           }
         />
         <Route

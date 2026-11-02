@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import PokemonArtworkImage from './PokemonArtworkImage.tsx'
 
 interface PokemonArtworkProps {
   name: string
   image: string | null
   shinyImage: string | null
+  hero?: boolean
 }
 
 type ArtworkVariant = 'normal' | 'shiny'
 
-export default function PokemonArtwork({ name, image, shinyImage }: PokemonArtworkProps) {
+export default function PokemonArtwork({ name, image, shinyImage, hero = false }: PokemonArtworkProps) {
   const [variant, setVariant] = useState<ArtworkVariant>('normal')
   const [failedImage, setFailedImage] = useState<string | null>(null)
   const source = variant === 'shiny' ? shinyImage : image
@@ -18,25 +20,15 @@ export default function PokemonArtwork({ name, image, shinyImage }: PokemonArtwo
     <div className="pokemon-artwork">
       <div className="pokemon-artwork-preview">
         {source && source !== failedImage ? (
-          <img
-            key={source}
-            src={source}
-            alt={name + ' ' + label + ' artwork'}
-            width="220"
-            height="220"
-            onError={() => setFailedImage(source)}
-          />
+          hero ? <PokemonArtworkImage key={source} source={source} alt={name + ' ' + label + ' artwork'} onError={() => setFailedImage(source)} /> :
+          <img key={source} src={source} alt={name + ' ' + label + ' artwork'} width="220" height="220" onError={() => setFailedImage(source)} />
         ) : (
           <p role="status">{label} image is not available for this Pokémon.</p>
         )}
       </div>
       <div className="pokemon-artwork-toggle" role="group" aria-label="Pokémon appearance">
-        <button type="button" aria-pressed={variant === 'normal'} onClick={() => setVariant('normal')}>
-          Normal
-        </button>
-        <button type="button" aria-pressed={variant === 'shiny'} onClick={() => setVariant('shiny')}>
-          Shiny
-        </button>
+        <button type="button" aria-pressed={variant === 'normal'} onClick={() => setVariant('normal')}>Normal</button>
+        <button type="button" aria-pressed={variant === 'shiny'} onClick={() => setVariant('shiny')}>Shiny</button>
       </div>
     </div>
   )

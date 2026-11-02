@@ -127,6 +127,8 @@ export interface GenerationResults {
 }
 
 export interface PokemonSpeciesResponse {
+  genera?: { genus: string; language: NamedApiResource }[]
+  flavor_text_entries?: { flavor_text: string; language: NamedApiResource }[]
   varieties: { is_default: boolean; pokemon: NamedApiResource }[]
   evolution_chain: { url: string } | null
 }

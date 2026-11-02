@@ -1,3 +1,4 @@
+import type { PokemonSpeciesResult } from '../hooks/usePokemonSpecies.ts'
 import { useEffect, useState } from 'react'
 import type {
   EvolutionChainResponse, EvolutionNode, EvolutionStage,
@@ -8,6 +9,7 @@ import PokemonEvolutionStage from './PokemonEvolutionStage.tsx'
 
 interface PokemonEvolutionProps {
   speciesUrl: string
+  speciesState?: PokemonSpeciesResult
 }
 
 interface EvolutionState {
@@ -30,17 +32,25 @@ async function loadStage(node: EvolutionNode, signal: AbortSignal): Promise<Evol
   }
 }
 
-export default function PokemonEvolution({ speciesUrl }: PokemonEvolutionProps) {
+export default function PokemonEvolution({ speciesUrl, speciesState }: PokemonEvolutionProps) {
   const [result, setResult] = useState<EvolutionState | null>(null)
 
+  const sharedSpecies = speciesState?.data
+  const hasSharedSpecies = speciesState !== undefined
+  const sharedError = speciesState?.error
+
   useEffect(() => {
+    if (hasSharedSpecies && !sharedSpecies) return
     const controller = new AbortController()
 
     async function loadEvolution(): Promise<void> {
       try {
-        const speciesResponse = await fetch(speciesUrl, { signal: controller.signal })
-        if (!speciesResponse.ok) throw new Error('Failed to load Pokémon species')
-        const species: PokemonSpeciesResponse = await speciesResponse.json()
+        let species = sharedSpecies
+        if (!species) {
+          const speciesResponse = await fetch(speciesUrl, { signal: controller.signal })
+          if (!speciesResponse.ok) throw new Error('Failed to load Pokémon species')
+          species = await speciesResponse.json() as PokemonSpeciesResponse
+        }
         if (!species.evolution_chain) throw new Error('Evolution data is unavailable')
 
         const chainResponse = await fetch(species.evolution_chain.url, { signal: controller.signal })
@@ -67,7 +77,7 @@ export default function PokemonEvolution({ speciesUrl }: PokemonEvolutionProps) 
 
     loadEvolution()
     return () => controller.abort()
-  }, [speciesUrl])
+  }, [speciesUrl, sharedSpecies, hasSharedSpecies])
 
   const currentResult = result?.speciesUrl === speciesUrl ? result : null
   const tree = currentResult?.tree
@@ -78,8 +88,8 @@ export default function PokemonEvolution({ speciesUrl }: PokemonEvolutionProps) 
   return (
     <section className="pokemon-evolution" aria-labelledby="pokemon-evolution-heading">
       <h3 id="pokemon-evolution-heading">Evolution Chain</h3>
-      {!currentResult && <p role="status">Loading evolution chain...</p>}
-      {currentResult?.error && <p role="alert">Error: {currentResult.error}</p>}
+      {!currentResult && !sharedError && <p role="status">Loading evolution chain...</p>}
+      {(sharedError || currentResult?.error) && <p role="alert">Error: {sharedError ?? currentResult?.error}</p>}
       {tree && (
         <ul className="pokemon-evolution-tree">
           <PokemonEvolutionStage stage={tree} />

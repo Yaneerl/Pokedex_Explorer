@@ -13,8 +13,9 @@ async function fetchData<T>(url: string, signal: AbortSignal): Promise<T> {
 export default async function loadMegaForms(
   current: PokemonResponse,
   signal: AbortSignal,
+  speciesData?: PokemonSpeciesResponse,
 ): Promise<PokemonMegaFormsData> {
-  const species = await fetchData<PokemonSpeciesResponse>(current.species.url, signal)
+  const species = speciesData ?? await fetchData<PokemonSpeciesResponse>(current.species.url, signal)
   const regularResource = species.varieties.find((variety) => variety.is_default)?.pokemon
   if (!regularResource) throw new Error('Regular form is unavailable')
 

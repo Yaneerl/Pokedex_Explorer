@@ -1,0 +1,44 @@
+/* This shell belongs to the catalog route; other pages keep their existing layout. */
+.app.app--home { max-width: 1280px; padding: clamp(8px, 2vw, 24px); }
+.pokedex-frame {
+  --frame-rail: clamp(8px, 1.5vw, 18px);
+  --frame-radius: clamp(18px, 3vw, 34px);
+  position: relative;
+  padding: 0 var(--frame-rail);
+  border: 2px solid #73192d;
+  border-radius: var(--frame-radius);
+  background: linear-gradient(105deg, #f17783 0%, #d34055 3%, #ba243d 48%, #da4b60 97%, #851d33 100%);
+  box-shadow: inset 0 2px 0 #ffc0c7, inset 0 -5px 0 #8a1d32, 0 8px 0 #6f2030, 0 18px 34px #26364430;
+}
+.pokedex-frame-top { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.pokedex-frame-mark { margin-right: auto; color: #ffe8ec; font-size: 9px; font-weight: 700; letter-spacing: .18em; text-shadow: 0 1px #741c31; }
+.pokedex-frame-lights { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; padding: 5px 10px; border-radius: 12px; background: #8b2438; box-shadow: inset 0 2px 3px #4c1328, 0 1px #ffb3bd70; }
+.pokedex-frame-lights span { width: 7px; height: 7px; border: 1px solid #6b1024; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffc9c1, #e12837 55%, #9b152c); }
+.pokedex-frame-lights span:last-child { background: radial-gradient(circle at 35% 30%, #b5f7ff, #429da9 55%, #205763); border-color: #194b56; }
+.pokedex-frame-screw { position: relative; flex-shrink: 0; width: 9px; height: 9px; border: 1px solid #6b2838; border-radius: 50%; background: linear-gradient(120deg, #d5b3b8, #795461); box-shadow: 0 1px #ffacb7; }
+.pokedex-frame-screw::after { content: ''; position: absolute; left: 1px; right: 1px; top: 3px; height: 1px; background: #442938; transform: rotate(-30deg); }
+.pokedex-frame-bezel {
+  padding: clamp(6px, 1vw, 12px) clamp(6px, 1vw, 12px) 0;
+  border: 1px solid #555f66;
+  border-radius: 12px 12px 14px clamp(28px, 4vw, 54px);
+  background: linear-gradient(105deg, #d7dde0 0%, #a5afb5 2%, #eef1f2 9%, #cbd1d5 48%, #e5e8ea 94%, #9da8af 100%);
+  box-shadow: 0 0 0 2px #882236, 0 -1px 0 3px #ffabb66b, inset 0 2px 1px #fff, inset -2px 0 3px #74838c;
+}
+.pokedex-screen { position: relative; isolation: isolate; overflow: hidden; border: 3px solid #344b56; border-radius: 5px; background: linear-gradient(165deg, #2aadd8 0%, #37c3c6 100%); box-shadow: 0 1px 0 #fff, 0 0 0 1px #697f89; }
+.pokedex-screen-content { position: relative; padding: clamp(14px, 3vw, 36px); }
+.pokedex-screen-content::before { content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(180deg, #e6f8fceb 0, #e6f8fceb 520px, #e6f8fc45 850px); }
+.pokedex-frame-console { display: flex; align-items: center; gap: 18px; min-height: 80px; padding: 14px clamp(16px, 3vw, 36px); }
+.pokedex-frame-button { flex-shrink: 0; width: 30px; height: 30px; border: 2px solid #7b2737; border-radius: 50%; background: radial-gradient(circle at 35% 25%, #f79ca3, #d13e50 38%, #b51e34 72%, #761b30); box-shadow: 0 2px 0 #4b2732, 0 0 0 3px #fff8, 0 4px 5px #374c4c33; }
+.pokedex-frame-serial { font-size: 9px; font-weight: 700; line-height: 1.6; letter-spacing: .15em; color: #4b5e68; text-shadow: 0 1px #fff; }
+.pokedex-frame-grille { display: grid; gap: 5px; width: clamp(50px, 9vw, 100px); margin-left: auto; transform: skewX(-14deg); }
+.pokedex-frame-grille span { height: 4px; border: 1px solid #5b6b74; border-radius: 4px; background: #34424c; box-shadow: 0 1px #fff; }
+.pokedex-frame-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 24px; }
+.pokedex-frame-seam { width: 25%; height: 2px; border-radius: 2px; background: #791e31; box-shadow: 0 1px #ef8c9b; }
+@media (max-width: 599px) {
+  .pokedex-frame-top { min-height: 32px; }
+  .pokedex-frame-mark { display: none; }
+  .pokedex-frame-console { min-height: 64px; gap: 12px; padding: 12px 16px; }
+  .pokedex-frame-button { width: 24px; height: 24px; }
+  .pokedex-frame-serial { font-size: 7px; letter-spacing: .1em; }
+  .pokedex-frame-bottom { height: 20px; }
+}
