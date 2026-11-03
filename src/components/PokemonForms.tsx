@@ -9,6 +9,7 @@ import PokemonStats from './PokemonStats.tsx'
 import PokemonAbilities from './PokemonAbilities.tsx'
 import PokemonEvolution from './PokemonEvolution.tsx'
 import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
+import PokemonMeasurements from './PokemonMeasurements.tsx'
 
 interface PokemonFormsProps {
   pokemon: PokemonResponse
@@ -59,7 +60,7 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
     <div className="pokemon-details-display" style={getPokemonTypeStyle(active.types[0] ?? 'normal')}>
       <PokemonHero pokemon={active} heading={heading} pokedexId={pokedexId} species={species} formControls={
         <>
-          {!forms && !species.error && <p role="status">Loading Mega forms...</p>}
+          {!forms && !species.error && <div className="details-forms-loading" role="status"><span className="details-loading-announcement">Loading Mega forms...</span><span className="details-skeleton-forms details-skeleton-fill" aria-hidden="true" /></div>}
           {forms?.error && <p role="alert">Error: {forms.error}</p>}
           {species.error && <p className="pokemon-forms-unavailable">Mega forms are unavailable while species data cannot be loaded.</p>}
           {forms?.data && forms.data.megaForms.length > 0 && (
@@ -75,15 +76,9 @@ export default function PokemonForms({ pokemon }: PokemonFormsProps) {
       }>
         <PokemonFavoriteButton pokemonId={pokedexId} name={speciesName} />
       </PokemonHero>
-      <PokemonEvolution speciesUrl={pokemon.species.url} speciesState={species} />
+      <PokemonEvolution speciesUrl={pokemon.species.url} speciesState={species} currentSpeciesId={pokedexId} />
       <div className="pokemon-details-data-grid">
-        <section className="pokemon-physical-panel" aria-labelledby="pokemon-physical-heading">
-          <h3 id="pokemon-physical-heading">Height &amp; Weight</h3>
-          <dl className="pokemon-measurements" aria-label="Height and weight">
-            <div className="pokemon-measurement"><dt>Height</dt><dd>{active.heightMeters.toFixed(1)} m</dd></div>
-            <div className="pokemon-measurement"><dt>Weight</dt><dd>{active.weightKg.toFixed(1)} kg</dd></div>
-          </dl>
-        </section>
+        <PokemonMeasurements heightMeters={active.heightMeters} weightKg={active.weightKg} />
         <PokemonStats stats={active.stats} />
         <PokemonAbilities abilities={active.abilities} />
       </div>

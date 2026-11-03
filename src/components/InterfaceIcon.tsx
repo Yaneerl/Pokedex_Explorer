@@ -9,6 +9,10 @@ const paths = {
   reset: 'M3 10a9 9 0 1 1 2 8M3 4v6h6',
   previous: 'm14 5-7 7 7 7M7 12h14',
   next: 'm10 5 7 7-7 7M3 12h14',
+  height: 'M5 3v18M2 6l3-3 3 3M2 18l3 3 3-3M12 3h9v18h-9V3Zm0 4h4m-4 5h6m-6 5h4',
+  weight: 'M9 7a3 3 0 1 1 6 0M6 7h12l3 14H3L6 7Zm6 4v5m-3 0h6',
+  ability: 'm13 2-9 12h7l-1 8 10-13h-7l1-7Z',
+  hidden: 'M5 10V7a7 7 0 0 1 14 0v3M4 10h16v11H4V10Zm8 4v3m-2-1h4',
 } as const
 
 interface InterfaceIconProps {

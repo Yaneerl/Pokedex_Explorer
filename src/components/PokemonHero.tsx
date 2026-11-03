@@ -26,16 +26,18 @@ export default function PokemonHero({ pokemon, heading, pokedexId, species, chil
         <div className="pokemon-hero-form-controls">{formControls}</div>
       </div>
       <div className="pokemon-hero-info">
-        <p className="pokemon-record-number">Pokédex Number: #{String(pokedexId).padStart(4, '0')}</p>
-        <h2>{heading}</h2>
-        <div className="pokemon-hero-types" role="group" aria-label="Pokémon types">
-          {pokemon.types.map((type) => <PokemonTypeBadge key={type} type={type} />)}
+        <div className="pokemon-hero-identity">
+          <p className="pokemon-record-number">Pokédex Number: #{String(pokedexId).padStart(4, '0')}</p>
+          <h2>{heading}</h2>
+          <div className="pokemon-hero-types" role="group" aria-label="Pokémon types">
+            {pokemon.types.map((type) => <PokemonTypeBadge key={type} type={type} />)}
+          </div>
+          {classification !== 'regular' && (
+            <p className={'pokemon-classification pokemon-classification--' + classification}>
+              <span aria-hidden="true">✦</span> {classification === 'legendary' ? 'Legendary' : 'Mythical'} Pokémon
+            </p>
+          )}
         </div>
-        {classification !== 'regular' && (
-          <p className={'pokemon-classification pokemon-classification--' + classification}>
-            <span aria-hidden="true">✦</span> {classification === 'legendary' ? 'Legendary' : 'Mythical'} Pokémon
-          </p>
-        )}
         <PokemonSpeciesInfo species={species} />
         <div className="pokemon-form-controls">{children}</div>
       </div>

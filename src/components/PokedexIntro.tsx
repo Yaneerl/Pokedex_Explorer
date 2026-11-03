@@ -6,7 +6,7 @@ export const INTRO_DURATION_MS = 3200
 const durationStyle: CSSProperties & { '--intro-duration': string } = { '--intro-duration': INTRO_DURATION_MS + 'ms' }
 
 interface PokedexIntroProps {
-  onComplete: () => void
+  onComplete: (keyboard?: boolean) => void
 }
 
 export default function PokedexIntro({ onComplete }: PokedexIntroProps) {
@@ -14,10 +14,11 @@ export default function PokedexIntro({ onComplete }: PokedexIntroProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const skipRef = useRef<HTMLButtonElement>(null)
   const finished = useRef(false)
+  const keyboardInput = useRef(false)
   const finish = useCallback((): void => {
     if (finished.current) return
     finished.current = true
-    onComplete()
+    onComplete(keyboardInput.current)
   }, [onComplete])
 
   useEffect(() => {
@@ -46,7 +47,9 @@ export default function PokedexIntro({ onComplete }: PokedexIntroProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby={headingId}
+      onPointerDown={() => { keyboardInput.current = false }}
       onKeyDown={(event) => {
+        keyboardInput.current = true
         if (event.key === 'Escape') { event.preventDefault(); finish() }
         if (event.key === 'Tab') { event.preventDefault(); skipRef.current?.focus() }
       }}
