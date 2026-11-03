@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Pokemon } from '../types/pokemon.ts'
+import type { FavoriteIds } from '../utils/favorites.ts'
 import { getPokemonTypeStyle } from '../utils/pokemonTypeTheme.ts'
 import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
 import PokemonTypeBadge from './PokemonTypeBadge.tsx'
@@ -8,9 +9,10 @@ import '../styles/catalog-cards.css'
 interface CatalogPokemonCardProps {
   pokemon: Pokemon
   onSelect: (pokemon: Pokemon) => void
+  onFavoriteChange?: (ids: FavoriteIds) => void
 }
 
-export default function CatalogPokemonCard({ pokemon, onSelect }: CatalogPokemonCardProps) {
+export default function CatalogPokemonCard({ pokemon, onSelect, onFavoriteChange }: CatalogPokemonCardProps) {
   const [failedImage, setFailedImage] = useState<string | null>(null)
   const primaryType = pokemon.types[0] ?? 'normal'
 
@@ -34,7 +36,7 @@ export default function CatalogPokemonCard({ pokemon, onSelect }: CatalogPokemon
         </div>
       </div>
       <button className="catalog-card-open" type="button" aria-label={'View ' + pokemon.name + ' details'} onClick={() => onSelect(pokemon)} />
-      <PokemonFavoriteButton pokemonId={pokemon.id} name={pokemon.name} compact />
+      <PokemonFavoriteButton pokemonId={pokemon.id} name={pokemon.name} onChange={onFavoriteChange} compact />
     </li>
   )
 }

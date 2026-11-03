@@ -4,8 +4,10 @@ import type { Pokemon } from '../types/pokemon.ts'
 import { readFavorites } from '../utils/favorites.ts'
 import toPokemonCard from '../utils/toPokemonCard.ts'
 import loadFavoritePokemon from '../utils/loadFavoritePokemon.ts'
-import PokemonCard from './PokemonCard.tsx'
-import PokemonFavoriteButton from './PokemonFavoriteButton.tsx'
+import CatalogPokemonCard from './CatalogPokemonCard.tsx'
+import PokedexFrame from './PokedexFrame.tsx'
+import InterfaceIcon from './InterfaceIcon.tsx'
+import '../styles/pokemon-favorites.css'
 
 interface FavoritesResult {
   pokemon: Pokemon[]
@@ -46,38 +48,56 @@ export default function PokemonFavorites() {
 
   return (
     <section className="pokemon-favorites" aria-labelledby="favorites-heading">
-      <header className="app-header">
-        <h1 id="favorites-heading">Favorites</h1>
-        <Link className="favorites-back-link" to="/">← Back to Pokédex</Link>
-      </header>
-      {loading && <p role="status">Loading favorites...</p>}
-      {error && <p role="alert">Error: {error}</p>}
-      {!loading && !error && (favoriteIds.length === 0 ? (
-        <div className="favorites-empty">
-          <p>No favorites yet. Add Pokémon using the heart on their details page.</p>
-          <Link to="/">Explore Pokémon</Link>
+      <PokedexFrame>
+        <header className="favorites-header">
+          <div className="favorites-heading-panel">
+            <p className="favorites-kicker">POKÉDEX / PERSONAL ARCHIVE</p>
+            <h1 id="favorites-heading">My Pokémon Collection</h1>
+            <p className="favorites-intro">Your discoveries. Your favorites. All in one place.</p>
+          </div>
+          <div className="favorites-tools">
+            <div className="favorites-counter" aria-live="polite" aria-atomic="true">
+              <InterfaceIcon name="heart" />
+              <span><strong>{saved.error ? '—' : favoriteIds.length}</strong><span>saved Pokémon</span></span>
+            </div>
+            <Link className="favorites-back-link" to="/"><InterfaceIcon name="previous" />Back to Pokédex</Link>
+          </div>
+        </header>
+        <div className="favorites-body" aria-busy={loading}>
+          {loading && (
+            <div className="favorites-message" role="status">
+              <InterfaceIcon name="layers" />
+              <div><h2>Accessing your collection</h2><p>Loading favorites...</p></div>
+            </div>
+          )}
+          {error && (
+            <div className="favorites-message favorites-message--error" role="alert">
+              <InterfaceIcon name="heart" />
+              <div><h2>Collection unavailable</h2><p>Error: {error}</p></div>
+            </div>
+          )}
+          {!loading && !error && (favoriteIds.length === 0 ? (
+            <section className="favorites-empty" aria-labelledby="favorites-empty-heading">
+              <div className="favorites-empty-emblem" aria-hidden="true"><InterfaceIcon name="heart" /></div>
+              <p className="favorites-kicker">COLLECTION / STANDBY</p>
+              <h2 id="favorites-empty-heading">Your collection starts here</h2>
+              <p>No Pokémon saved yet. Use the heart on a Pokémon card or details page to add it to your collection.</p>
+              <Link className="favorites-discover-link" to="/">Discover Pokémon<InterfaceIcon name="next" /></Link>
+            </section>
+          ) : (
+            <ul className="pokemon-grid pokemon-favorites-grid" aria-label="Favorite Pokémon">
+              {pokemon.map((item) => (
+                <CatalogPokemonCard
+                  key={item.id}
+                  pokemon={item}
+                  onSelect={(selected) => navigate('/pokemon/' + selected.id)}
+                  onFavoriteChange={setFavoriteIds}
+                />
+              ))}
+            </ul>
+          ))}
         </div>
-      ) : (
-        <>
-          <p>{pokemon.length} favorites</p>
-          <ul className="pokemon-grid pokemon-favorites-grid" aria-label="Favorite Pokémon">
-            {pokemon.map((item) => (
-              <PokemonCard
-                key={item.id}
-                pokemon={item}
-                onSelect={(selected) => navigate('/pokemon/' + selected.id)}
-                actions={
-                  <PokemonFavoriteButton
-                    pokemonId={item.id}
-                    name={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
-                    onChange={setFavoriteIds}
-                  />
-                }
-              />
-            ))}
-          </ul>
-        </>
-      ))}
+      </PokedexFrame>
     </section>
   )
 }
