@@ -1,8 +1,9 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { afterEach, expect, test, vi } from 'vitest'
 import type { PokemonResponse, PokemonSummary } from '../types/pokemon.ts'
 import PokemonComparison from './PokemonComparison.tsx'
+import { pokemonFixture, pokemonApiResponse, pokemonApiUrl, requestUrl } from '../test/pokemonApiFixtures.ts'
 
 const index: PokemonSummary[] = [
   { id: 1, name: 'bulbasaur' }, { id: 2, name: 'ivysaur' }, { id: 3, name: 'venusaur' },
@@ -10,27 +11,15 @@ const index: PokemonSummary[] = [
   { id: 125, name: 'electabuzz' }, { id: 252, name: 'treecko' },
 ]
 
-function pokemon(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites' | 'stats'> {
-  const summary = index.find((item) => item.id === id)
-  if (!summary) throw new Error('Unknown fixture ID: ' + id)
-  const types = id === 6 ? ['fire', 'flying'] : id === 1 ? ['grass', 'poison'] : ['electric']
-  return {
-    ...summary,
-    types: types.map((name) => ({ type: { name, url: '/type/' + name } })),
-    stats: [
-      { base_stat: 45, stat: { name: 'hp' } }, { base_stat: 49, stat: { name: 'attack' } },
-      { base_stat: 49, stat: { name: 'defense' } }, { base_stat: 65, stat: { name: 'special-attack' } },
-      { base_stat: 65, stat: { name: 'special-defense' } }, { base_stat: 45, stat: { name: 'speed' } },
-    ],
-    sprites: {
-      front_default: '/sprite-' + id + '.png', front_shiny: null,
-      other: { 'official-artwork': { front_default: id === 25 ? '/artwork-25.png' : null, front_shiny: null } },
-    },
-  }
+function pokemon(id: number): PokemonResponse {
+  return { ...pokemonFixture(id), sprites: {
+    front_default: '/sprite-' + id + '.png', front_shiny: null,
+    other: { 'official-artwork': { front_default: id === 25 ? '/artwork-25.png' : null, front_shiny: null } },
+  } }
 }
 
 function mockApi() {
-  const mock = vi.fn<typeof fetch>(async (input) => Response.json(pokemon(Number(String(input).split('/').at(-1)))))
+  const mock = vi.fn<typeof fetch>(async (input) => pokemonApiResponse(input, pokemon))
   vi.stubGlobal('fetch', mock)
   return mock
 }
@@ -50,6 +39,10 @@ function choose(number: number, query: string, name: string) {
 
 function selected(number: number) {
   return within(slot(number)).getByRole('article', { name: 'Selected Pokémon ' + number })
+}
+
+async function ready(n: number) {
+  await waitFor(() => expect(within(slot(n)).queryByRole('status')).toBeNull())
 }
 
 afterEach(() => vi.unstubAllGlobals())
@@ -75,7 +68,9 @@ test('selects by partial name and number and renders the API picture, name, numb
   choose(1, 'pika', 'pikachu')
   choose(2, '6', 'charizard')
   await within(slot(1)).findByRole('article')
+  await ready(1)
   await within(slot(2)).findByRole('article')
+  await ready(2)
   expect(within(selected(1)).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
   expect(within(selected(1)).getByText('#0025')).toBeTruthy()
   expect(within(selected(1)).getByText('electric')).toBeTruthy()
@@ -94,12 +89,16 @@ test('replaces either selected Pokémon without resetting the other side', async
   choose(1, '25', 'pikachu')
   choose(2, '6', 'charizard')
   await within(slot(1)).findByRole('article')
+  await ready(1)
   await within(slot(2)).findByRole('article')
+  await ready(2)
   choose(1, 'bulb', 'bulbasaur')
   await within(slot(1)).findByRole('heading', { name: 'bulbasaur' })
+  await ready(1)
   expect(within(selected(2)).getByRole('heading', { name: 'charizard' })).toBeTruthy()
   choose(2, '26', 'raichu')
   await within(slot(2)).findByRole('heading', { name: 'raichu' })
+  await ready(2)
   expect(within(selected(1)).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
 })
 
@@ -109,37 +108,46 @@ test('rejects a duplicate ID and keeps both existing selections without another 
   choose(1, '25', 'pikachu')
   choose(2, '6', 'charizard')
   await within(slot(1)).findByRole('article')
+  await ready(1)
   await within(slot(2)).findByRole('article')
+  await ready(2)
   const before = fetchMock.mock.calls.length
   choose(2, 'pika', 'pikachu')
-  expect(within(slot(2)).getByRole('alert').textContent).toContain('Choose a different Pokémon.')
+  expect(within(slot(2)).getByRole('alert').textContent).toContain('Choose a different form.')
   expect(within(selected(1)).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
   expect(within(selected(2)).getByRole('heading', { name: 'charizard' })).toBeTruthy()
   expect(fetchMock.mock.calls.length).toBe(before)
 })
 
-test('prevents simultaneous duplicate choices while the first side is still loading', async () => {
-  const pending: ((response: Response) => void)[] = []
-  const fetchMock = vi.fn<typeof fetch>(() => new Promise<Response>((resolve) => pending.push(resolve)))
+test.each([1, 2])('preserves the first pending choice on side %s and rejects a simultaneous exact duplicate', async (first) => {
+  const second = first === 1 ? 2 : 1
+  let finish: ((response: Response) => void) | undefined
+  const fetchMock = vi.fn<typeof fetch>((input) => requestUrl(input) === pokemonApiUrl('pokemon', 25)
+    ? new Promise<Response>((resolve) => { finish = resolve })
+    : Promise.resolve(pokemonApiResponse(input, pokemon)))
   vi.stubGlobal('fetch', fetchMock)
   showComparison()
-  choose(1, '25', 'pikachu')
-  expect(within(slot(1)).getByRole('status').textContent).toBe('Loading Pokémon 1...')
-  choose(2, '25', 'pikachu')
-  expect(within(slot(2)).getByRole('alert').textContent).toContain('already selected or loading')
+  choose(first, '25', 'pikachu')
+  expect(within(slot(first)).getByRole('status').textContent).toBe('Loading Pokémon ' + first + '...')
+  choose(second, '25', 'pikachu')
+  expect(within(slot(second)).getByRole('alert').textContent).toContain('already selected or loading')
   expect(fetchMock).toHaveBeenCalledTimes(1)
-  const finish = pending[0]
   if (!finish) throw new Error('Expected pending request')
-  await act(async () => finish(Response.json(pokemon(25))))
-  expect(within(selected(1)).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
-  expect(within(slot(2)).queryByRole('article')).toBeNull()
+  await act(async () => finish?.(Response.json(pokemon(25))))
+  await ready(first)
+  expect(within(selected(first)).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
+  expect(within(slot(first)).queryByRole('alert')).toBeNull()
+  expect(within(slot(second)).queryByRole('article')).toBeNull()
+  expect(within(slot(second)).queryByRole('status')).toBeNull()
+  expect(fetchMock.mock.calls.map(([input]) => requestUrl(input))).toEqual([
+    pokemonApiUrl('pokemon', 25), pokemonApiUrl('pokemon-species', 25),
+  ])
 })
 
 test('cancels superseded requests and ignores late responses without disturbing the other selection', async () => {
   const pending: { signal: AbortSignal; finish: (response: Response) => void }[] = []
   vi.stubGlobal('fetch', vi.fn<typeof fetch>(async (input, init) => {
-    const id = Number(String(input).split('/').at(-1))
-    if (id !== 25) return Response.json(pokemon(id))
+    if (requestUrl(input) !== pokemonApiUrl('pokemon', 25)) return pokemonApiResponse(input, pokemon)
     const signal = init?.signal
     if (!signal) throw new Error('Expected AbortSignal')
     return new Promise<Response>((finish) => pending.push({ signal, finish }))
@@ -147,9 +155,11 @@ test('cancels superseded requests and ignores late responses without disturbing 
   showComparison()
   choose(2, '6', 'charizard')
   await within(slot(2)).findByRole('article')
+  await ready(2)
   choose(1, '25', 'pikachu')
   choose(1, '1', 'bulbasaur')
   await within(slot(1)).findByRole('heading', { name: 'bulbasaur' })
+  await ready(1)
   const request = pending[0]
   if (!request) throw new Error('Expected pending request')
   expect(request.signal.aborted).toBe(true)
@@ -184,14 +194,21 @@ test.each([
   choose(1, '25', 'pikachu')
   choose(2, '6', 'charizard')
   await within(slot(1)).findByRole('article')
+  await ready(1)
   await within(slot(2)).findByRole('article')
-  fetchMock.mockImplementationOnce(async () => new Response(null, { status }))
+  await ready(2)
+  let fail = true
+  fetchMock.mockImplementation(async (input) => {
+    if (requestUrl(input) === pokemonApiUrl('pokemon', 1) && fail) { fail = false; return new Response(null, { status }) }
+    return pokemonApiResponse(input, pokemon)
+  })
   choose(1, '1', 'bulbasaur')
   expect((await within(slot(1)).findByRole('alert')).textContent).toBe(message)
   expect(within(selected(1)).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
   expect(within(selected(2)).getByRole('heading', { name: 'charizard' })).toBeTruthy()
   choose(1, '1', 'bulbasaur')
   await within(slot(1)).findByRole('heading', { name: 'bulbasaur' })
+  await ready(1)
   expect(within(slot(1)).queryByRole('alert')).toBeNull()
 })
 
@@ -222,4 +239,47 @@ test('rejects API data with an unexpected ID instead of committing an incorrect 
   choose(1, '25', 'pikachu')
   expect((await within(slot(1)).findByRole('alert')).textContent).toBe('Unexpected Pokémon data.')
   expect(within(slot(1)).queryByRole('article')).toBeNull()
+})
+
+test('allows Regular versus verified Mega X/Y, rejects only the exact form and swaps selected forms with their stats', async () => {
+  const fetchMock = mockApi()
+  showComparison()
+  choose(1, '6', 'charizard')
+  await ready(1)
+  choose(2, '6', 'charizard')
+  await ready(2)
+  const leftForm = screen.getByRole('combobox', { name: 'Form for Pokémon 1' }) as HTMLSelectElement
+  const rightForm = screen.getByRole('combobox', { name: 'Form for Pokémon 2' }) as HTMLSelectElement
+  expect(leftForm.value).toBe('6')
+  expect(rightForm.value).toBe('10034')
+  expect(within(selected(1)).getByRole('heading', { name: 'charizard' })).toBeTruthy()
+  expect(within(selected(2)).getByRole('heading', { name: 'Mega Charizard X' })).toBeTruthy()
+  expect(within(selected(2)).getByText('dragon')).toBeTruthy()
+  expect(within(selected(2)).getByRole('img').getAttribute('src')).toBe('/artwork-10034.png')
+  const stats = within(screen.getByRole('region', { name: 'Stats Comparison' }))
+  expect(stats.getByRole('meter', { name: 'Mega Charizard X Attack' }).getAttribute('aria-valuenow')).toBe('130')
+  expect(within(stats.getByRole('listitem', { name: 'Attack' })).getByText('Difference: 46 points')).toBeTruthy()
+  const before = fetchMock.mock.calls.length
+  expect((within(leftForm).getByRole('option', { name: 'Mega Charizard X — selected on other side' }) as HTMLOptionElement).disabled).toBe(true)
+  // Even a programmatic attempt must not commit the exact same form twice.
+  fireEvent.change(leftForm, { target: { value: '10034' } })
+  expect(within(slot(1)).getByRole('alert').textContent).toContain('This exact Pokémon form is already selected')
+  expect(leftForm.value).toBe('6')
+  expect(rightForm.value).toBe('10034')
+  fireEvent.change(leftForm, { target: { value: '10035' } })
+  expect(within(slot(1)).queryByRole('alert')).toBeNull()
+  expect(within(selected(1)).getByRole('heading', { name: 'Mega Charizard Y' })).toBeTruthy()
+  expect(within(selected(1)).getByText('flying')).toBeTruthy()
+  expect(stats.getByRole('meter', { name: 'Mega Charizard Y Special Attack' }).getAttribute('aria-valuenow')).toBe('159')
+  fireEvent.click(screen.getByRole('button', { name: 'Swap Pokémon' }))
+  expect(leftForm.value).toBe('10034')
+  expect(rightForm.value).toBe('10035')
+  expect(within(selected(1)).getByRole('heading', { name: 'Mega Charizard X' })).toBeTruthy()
+  expect(within(selected(2)).getByRole('heading', { name: 'Mega Charizard Y' })).toBeTruthy()
+  expect(stats.getByRole('meter', { name: 'Mega Charizard X Attack' }).getAttribute('aria-valuenow')).toBe('130')
+  fireEvent.change(leftForm, { target: { value: '6' } })
+  expect(within(selected(1)).getByRole('heading', { name: 'charizard' })).toBeTruthy()
+  expect(stats.getByRole('meter', { name: 'charizard Attack' }).getAttribute('aria-valuenow')).toBe('84')
+  expect(fetchMock.mock.calls.length).toBe(before)
+  expect(screen.queryByRole('alert')).toBeNull()
 })

@@ -63,6 +63,9 @@ export default function comparisonSelection(state: ComparisonState, action: Comp
           : duplicate(current),
       }
     }
+    // Keep the first request in place until its forms are known. A second slot
+    // can then choose an available Mega form without competing for this request.
+    if (other.pendingId === action.id) return { ...state, [action.side]: duplicate(current) }
     return {
       ...state,
       [action.side]: {

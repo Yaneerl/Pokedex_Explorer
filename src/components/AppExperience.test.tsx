@@ -5,6 +5,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import App from '../App.tsx'
 import { INTRO_STORAGE_KEY, REDUCED_MOTION_QUERY } from '../hooks/useIntroPlayback.ts'
 import AppExperience from './AppExperience.tsx'
+import activateNativeButton from '../test/activateNativeButton.ts'
 import PokedexIntro, { INTRO_DURATION_MS } from './PokedexIntro.tsx'
 
 function motionPreference(reduced = false) {
@@ -61,7 +62,7 @@ test('shows one accessible intro on first entry while mounting the underlying ap
   expect(document.activeElement).toBe(skip)
 })
 
-test('Skip Intro restores focus and scrolling without remounting the app or resetting state', () => {
+test('pointer Skip Intro releases focus and restores scrolling without remounting the app or resetting state', () => {
   document.body.style.overflow = 'auto'
   const cleared = vi.spyOn(window, 'clearTimeout')
   const view = show()
@@ -72,7 +73,8 @@ test('Skip Intro restores focus and scrolling without remounting the app or rese
   fireEvent.click(screen.getByRole('button', { name: 'Skip Intro' }))
   expect(screen.queryByRole('dialog')).toBeNull()
   expect(screen.getByRole('button', { name: 'Count 1' })).toBeTruthy()
-  expect(document.activeElement).toBe(screen.getByRole('heading', { name: 'Catalog' }))
+  expect(document.activeElement).toBe(document.body)
+  expect(screen.getByRole('heading', { name: 'Catalog' }).hasAttribute('tabindex')).toBe(false)
   expect(view.container.querySelector('[inert]')).toBeNull()
   expect(document.body.style.overflow).toBe('auto')
   expect(mounted).toHaveBeenCalledTimes(1)
@@ -104,6 +106,22 @@ test('allows Escape to skip and does not replay after remounting or refreshing t
   expect(screen.getByRole('heading', { name: 'Catalog' })).toBeTruthy()
 })
 
+test.each(['Escape', 'Enter'] as const)('keyboard %s completion focuses the page heading without scrolling', (key) => {
+  const focus = vi.spyOn(HTMLElement.prototype, 'focus')
+  show()
+  if (key === 'Escape') fireEvent.keyDown(screen.getByRole('dialog'), { key })
+  else activateNativeButton(screen.getByRole('button', { name: 'Skip Intro' }), key)
+  const heading = screen.getByRole('heading', { name: 'Catalog' })
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(document.activeElement).toBe(heading)
+  expect(heading.getAttribute('tabindex')).toBe('-1')
+  expect(focus).toHaveBeenLastCalledWith({ preventScroll: true })
+  const button = screen.getByRole('button', { name: 'Count 0' })
+  expect(button.tabIndex).toBe(0)
+  button.focus()
+  expect(document.activeElement).toBe(button)
+})
+
 test('does not restart if the page is refreshed while the intro is still running', () => {
   const first = show()
   expect(screen.getByRole('dialog')).toBeTruthy()
@@ -128,7 +146,8 @@ test('ends immediately when reduced motion is enabled during playback and cleans
   const view = show()
   act(() => preference.change(true))
   expect(screen.queryByRole('dialog')).toBeNull()
-  expect(document.activeElement).toBe(screen.getByRole('heading', { name: 'Catalog' }))
+  expect(document.activeElement).toBe(document.body)
+  expect(screen.getByRole('heading', { name: 'Catalog' }).hasAttribute('tabindex')).toBe(false)
   act(() => vi.runOnlyPendingTimers())
   expect(screen.queryByRole('dialog')).toBeNull()
   view.unmount()

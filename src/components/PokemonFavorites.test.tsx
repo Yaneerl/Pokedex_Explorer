@@ -4,6 +4,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import type { PokemonResponse } from '../types/pokemon.ts'
 import { FAVORITES_STORAGE_KEY } from '../utils/favorites.ts'
 import PokemonFavorites from './PokemonFavorites.tsx'
+import activateNativeButton from '../test/activateNativeButton.ts'
 
 type CardResponse = Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites'>
 const cards: Record<number, CardResponse> = {
@@ -51,7 +52,7 @@ test('loads saved Pokémon with API images, names, Pokédex numbers and types', 
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6,25]')
   mockApi()
   showFavorites()
-  expect(screen.getByRole('status').textContent).toBe('Loading favorites...')
+  expect(within(screen.getByRole('status')).getByText('Loading favorites...').textContent).toBe('Loading favorites...')
 
   const list = await screen.findByRole('list', { name: 'Favorite Pokémon' })
   expect(within(list).getAllByRole('listitem')).toHaveLength(2)
@@ -71,18 +72,19 @@ test('removes cards immediately without navigating or refetching and shows Empty
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6,25]')
   const fetchMock = mockApi()
   showFavorites()
-  const remove = await screen.findByRole('button', { name: 'Remove Charizard from favorites' })
-  fireEvent.keyDown(remove, { key: 'Enter' })
-  expect(screen.getByRole('heading', { name: 'Favorites' })).toBeTruthy()
-  fireEvent.click(remove)
+  const remove = await screen.findByRole('button', { name: 'Remove charizard from favorites' })
+  expect(screen.getByRole('heading', { name: 'My Pokémon Collection' })).toBeTruthy()
+  activateNativeButton(remove, 'Enter')
   expect(screen.queryByRole('button', { name: 'View charizard details' })).toBeNull()
   expect(screen.getByRole('button', { name: 'View pikachu details' })).toBeTruthy()
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[25]')
+  expect(screen.getByText('saved Pokémon').parentElement?.querySelector('strong')?.textContent).toBe('1')
 
-  fireEvent.click(screen.getByRole('button', { name: 'Remove Pikachu from favorites' }))
-  expect(screen.getByText(/No favorites yet/)).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Remove pikachu from favorites' }))
+  expect(screen.getByText(/No Pokémon saved yet/)).toBeTruthy()
   expect(screen.queryByRole('list', { name: 'Favorite Pokémon' })).toBeNull()
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[]')
+  expect(screen.getByText('saved Pokémon').parentElement?.querySelector('strong')?.textContent).toBe('0')
   expect(fetchMock).toHaveBeenCalledTimes(2)
 })
 
@@ -93,21 +95,25 @@ test.each([
   if (value !== null) window.localStorage.setItem(FAVORITES_STORAGE_KEY, value)
   const fetchMock = mockApi()
   showFavorites()
-  expect(screen.getByText(/No favorites yet/)).toBeTruthy()
-  const link = screen.getByRole('link', { name: 'Explore Pokémon' })
+  expect(screen.getByText(/No Pokémon saved yet/)).toBeTruthy()
+  const link = screen.getByRole('link', { name: 'Discover Pokémon' })
   expect(link.getAttribute('href')).toBe('/')
   expect(fetchMock).not.toHaveBeenCalled()
   fireEvent.click(link)
   expect(screen.getByRole('heading', { name: 'Catalog destination' })).toBeTruthy()
 })
 
-test.each(['click', 'Enter', ' '])('opens the correct details route using %s on a favorite card', async (action) => {
+test.each(['click', 'Enter', ' '] as const)('opens the correct details route using %s on a favorite card', async (action) => {
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6]')
   mockApi()
   showFavorites()
   const card = await screen.findByRole('button', { name: 'View charizard details' })
   if (action === 'click') fireEvent.click(card)
-  else fireEvent.keyDown(card, { key: action })
+  else {
+    card.focus()
+    expect(document.activeElement).toBe(card)
+    activateNativeButton(card, action)
+  }
   expect(await screen.findByRole('heading', { name: 'Charizard details destination' })).toBeTruthy()
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6]')
 })
@@ -116,18 +122,18 @@ test('shows a failed API request as an error rather than a misleading empty list
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6]')
   vi.stubGlobal('fetch', vi.fn<typeof fetch>(async () => new Response(null, { status: 503 })))
   showFavorites()
-  expect((await screen.findByRole('alert')).textContent).toBe('Error: Failed to load favorite Pokémon #6.')
+  expect(within(await screen.findByRole('alert')).getByText('Error: Failed to load favorite Pokémon #6.').textContent).toBe('Error: Failed to load favorite Pokémon #6.')
   expect(screen.queryByRole('status')).toBeNull()
-  expect(screen.queryByText(/No favorites yet/)).toBeNull()
-  expect(screen.getByRole('link', { name: '← Back to Pokédex' })).toBeTruthy()
+  expect(screen.queryByText(/No Pokémon saved yet/)).toBeNull()
+  expect(screen.getByRole('link', { name: 'Back to Pokédex' })).toBeTruthy()
 })
 
 test('reports unavailable localStorage without crashing or fetching', () => {
   const fetchMock = mockApi()
   vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Blocked', 'SecurityError') })
   showFavorites()
-  expect(screen.getByRole('alert').textContent).toBe('Error: Favorites could not be read in this browser.')
-  expect(screen.queryByText(/No favorites yet/)).toBeNull()
+  expect(within(screen.getByRole('alert')).getByText('Error: Favorites could not be read in this browser.').textContent).toBe('Error: Favorites could not be read in this browser.')
+  expect(screen.queryByText(/No Pokémon saved yet/)).toBeNull()
   expect(fetchMock).not.toHaveBeenCalled()
 })
 
@@ -135,7 +141,7 @@ test('keeps a card after a failed removal write and removes it only when retry s
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6,25]')
   mockApi()
   showFavorites()
-  const remove = await screen.findByRole('button', { name: 'Remove Charizard from favorites' })
+  const remove = await screen.findByRole('button', { name: 'Remove charizard from favorites' })
   const blocked = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Full', 'QuotaExceededError') })
   fireEvent.click(remove)
   expect(screen.getByRole('alert').textContent).toBe('Favorites could not be saved in this browser.')
@@ -147,6 +153,7 @@ test('keeps a card after a failed removal write and removes it only when retry s
   expect(screen.queryByRole('button', { name: 'View charizard details' })).toBeNull()
   expect(screen.getByRole('button', { name: 'View pikachu details' })).toBeTruthy()
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[25]')
+  expect(screen.getByText('saved Pokémon').parentElement?.querySelector('strong')?.textContent).toBe('1')
 })
 
 test('aborts pending Pokémon requests when leaving the Favorites page', async () => {

@@ -1,24 +1,17 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import type { PokemonResponse, PokemonSummary } from '../types/pokemon.ts'
 import { FAVORITES_STORAGE_KEY } from '../utils/favorites.ts'
 import PokemonComparison from './PokemonComparison.tsx'
+import { pokemonFixture, pokemonSpeciesFixture, pokemonApiResponse, pokemonApiUrl, requestUrl } from '../test/pokemonApiFixtures.ts'
 
 const index: PokemonSummary[] = [{ id: 1, name: 'bulbasaur' }, { id: 6, name: 'charizard' }, { id: 25, name: 'pikachu' }]
-function data(id: number): Pick<PokemonResponse, 'id' | 'name' | 'types' | 'sprites' | 'stats'> {
-  const summary = index.find((item) => item.id === id)
-  if (!summary) throw new Error('Unexpected fixture ID')
-  return { ...summary, types: [{ type: { name: id === 6 ? 'fire' : 'electric', url: '/type/' } }],
-    stats: [
-      { base_stat: 45, stat: { name: 'hp' } }, { base_stat: 49, stat: { name: 'attack' } },
-      { base_stat: 49, stat: { name: 'defense' } }, { base_stat: 65, stat: { name: 'special-attack' } },
-      { base_stat: 65, stat: { name: 'special-defense' } }, { base_stat: 45, stat: { name: 'speed' } },
-    ],
-    sprites: { front_default: '/sprite-' + id + '.png', front_shiny: null } }
+function data(id: number): PokemonResponse {
+  return { ...pokemonFixture(id), sprites: { front_default: '/sprite-' + id + '.png', front_shiny: null } }
 }
 function mockApi() {
-  const mock = vi.fn<typeof fetch>(async (input) => Response.json(data(Number(String(input).split('/').at(-1)))))
+  const mock = vi.fn<typeof fetch>(async (input) => pokemonApiResponse(input, data))
   vi.stubGlobal('fetch', mock)
   return mock
 }
@@ -38,6 +31,10 @@ function choose(number: number, name: string) {
 function selected(number: number) { return within(slot(number).getByRole('article', { name: 'Selected Pokémon ' + number })) }
 
 beforeEach(() => window.localStorage.removeItem(FAVORITES_STORAGE_KEY))
+async function ready(n: number) {
+  await waitFor(() => expect(slot(n).queryByRole('status')).toBeNull())
+}
+
 afterEach(() => {
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
@@ -59,11 +56,17 @@ test('loads the saved API metadata lazily once for both lists and selects indepe
   choose(1, 'charizard')
   expect(selected(1).getByText('#0006')).toBeTruthy()
   expect(selected(1).getByText('fire')).toBeTruthy()
+  await ready(1)
   mode(2, 'My Favorites')
   choose(2, 'pikachu')
+  await ready(2)
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
   expect(selected(1).getByRole('heading', { name: 'charizard' })).toBeTruthy()
-  expect(fetchMock).toHaveBeenCalledTimes(2)
+  expect(fetchMock.mock.calls.map(([input]) => requestUrl(input)).sort()).toEqual([
+    ...[6, 25, 10034, 10035].map((id) => pokemonApiUrl('pokemon', id)),
+    ...[6, 25].map((id) => pokemonApiUrl('pokemon-species', id)),
+    ...[10034, 10035].map((id) => pokemonApiUrl('pokemon-form', id)),
+  ].sort())
   expect(writeSpy).not.toHaveBeenCalled()
   expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('[6,25]')
 })
@@ -79,13 +82,17 @@ test('preserves the other side and search text while switching sources and repla
   fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '25' } })
   choose(2, 'pikachu')
   await slot(2).findByRole('article')
+  await ready(2)
   mode(1, 'Search Pokémon')
   expect((screen.getByLabelText('Search Pokémon 1') as HTMLInputElement).value).toBe('bulb')
   choose(1, 'bulbasaur')
   await slot(1).findByRole('heading', { name: 'bulbasaur' })
+  await ready(1)
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
   mode(2, 'My Favorites')
   choose(2, 'charizard')
+  await slot(2).findByRole('heading', { name: 'charizard' })
+  await ready(2)
   expect(selected(1).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
   expect(selected(2).getByRole('heading', { name: 'charizard' })).toBeTruthy()
   mode(1, 'My Favorites')
@@ -94,27 +101,31 @@ test('preserves the other side and search text while switching sources and repla
   expect(slot(1).getByRole('button', { name: 'Search Pokémon' }).getAttribute('aria-pressed')).toBe('false')
 })
 
-test('rejects duplicates across favorites and search in both directions and preserves previous selections', async () => {
-  window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[6,25]')
+test('rejects exact duplicates across favorites and search in both directions and preserves previous selections', async () => {
+  window.localStorage.setItem(FAVORITES_STORAGE_KEY, '[1,25]')
   const fetchMock = mockApi()
   showComparison()
   mode(1, 'My Favorites')
   await slot(1).findByRole('list')
-  choose(1, 'charizard')
+  choose(1, 'bulbasaur')
+  await ready(1)
   fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '25' } })
   choose(2, 'pikachu')
-  await slot(2).findByRole('article')
+  await ready(2)
   choose(1, 'pikachu')
-  expect(slot(1).getByRole('alert').textContent).toContain('Choose a different Pokémon.')
-  fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '6' } })
-  choose(2, 'charizard')
-  expect(slot(2).getByRole('alert').textContent).toContain('Choose a different Pokémon.')
-  expect(selected(1).getByRole('heading', { name: 'charizard' })).toBeTruthy()
+  expect(slot(1).getByRole('alert').textContent).toContain('Choose a different form.')
+  fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '1' } })
+  choose(2, 'bulbasaur')
+  expect(slot(2).getByRole('alert').textContent).toContain('Choose a different form.')
+  expect(selected(1).getByRole('heading', { name: 'bulbasaur' })).toBeTruthy()
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
-  expect(fetchMock).toHaveBeenCalledTimes(3)
+  expect(fetchMock.mock.calls.map(([input]) => requestUrl(input)).sort()).toEqual([
+    ...[1, 25].map((id) => pokemonApiUrl('pokemon', id)),
+    ...[1, 25].map((id) => pokemonApiUrl('pokemon-species', id)),
+  ].sort())
   mode(2, 'My Favorites')
-  choose(2, 'charizard')
-  expect(slot(2).getByRole('alert').textContent).toContain('Choose a different Pokémon.')
+  choose(2, 'bulbasaur')
+  expect(slot(2).getByRole('alert').textContent).toContain('Choose a different form.')
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
 })
 
@@ -126,9 +137,17 @@ test('rejects a favorite already loading on the other side and cancels supersede
   await slot(1).findByRole('list')
   let finish: ((response: Response) => void) | undefined
   let signal: AbortSignal | null | undefined
-  fetchMock.mockImplementationOnce((_input, init) => new Promise<Response>((resolve) => { finish = resolve; signal = init?.signal }))
+  let defer = true
+  fetchMock.mockImplementation(async (input, init) => {
+    if (requestUrl(input) === pokemonApiUrl('pokemon-species', 25) && defer) {
+      defer = false
+      return new Promise<Response>((resolve) => { finish = resolve; signal = init?.signal })
+    }
+    return pokemonApiResponse(input, data)
+  })
   fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '25' } })
   choose(2, 'pikachu')
+  await waitFor(() => expect(finish).toBeTypeOf('function'))
   choose(1, 'pikachu')
   expect(slot(1).getByRole('alert').textContent).toContain('already selected or loading')
   expect(slot(1).queryByRole('article')).toBeNull()
@@ -136,9 +155,12 @@ test('rejects a favorite already loading on the other side and cancels supersede
   choose(2, 'charizard')
   expect(signal?.aborted).toBe(true)
   if (!finish) throw new Error('Expected pending search request')
-  await act(async () => finish?.(Response.json(data(25))))
+  await act(async () => finish?.(Response.json(pokemonSpeciesFixture(25))))
+  await slot(2).findByRole('heading', { name: 'charizard' })
+  await ready(2)
   expect(selected(2).getByRole('heading', { name: 'charizard' })).toBeTruthy()
   choose(1, 'pikachu')
+  await ready(1)
   expect(selected(1).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
 })
 
@@ -163,6 +185,7 @@ test('reports blocked localStorage while regular search remains usable', async (
   fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '25' } })
   choose(2, 'pikachu')
   await slot(2).findByRole('article')
+  await ready(2)
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
 })
 
@@ -173,7 +196,9 @@ test('handles failed favorites loading without losing a search selection or disa
   fireEvent.change(screen.getByLabelText('Search Pokémon 2'), { target: { value: '25' } })
   choose(2, 'pikachu')
   await slot(2).findByRole('article')
-  fetchMock.mockImplementationOnce(async () => new Response(null, { status: 503 }))
+  await ready(2)
+  fetchMock.mockImplementation(async (input) => requestUrl(input) === pokemonApiUrl('pokemon', 6)
+    ? new Response(null, { status: 503 }) : pokemonApiResponse(input, data))
   mode(1, 'My Favorites')
   expect((await slot(1).findByRole('alert')).textContent).toContain('Failed to load favorite Pokémon #6.')
   expect(selected(2).getByRole('heading', { name: 'pikachu' })).toBeTruthy()
@@ -181,6 +206,7 @@ test('handles failed favorites loading without losing a search selection or disa
   fireEvent.change(screen.getByLabelText('Search Pokémon 1'), { target: { value: '1' } })
   choose(1, 'bulbasaur')
   await slot(1).findByRole('article')
+  await ready(1)
   expect(slot(1).queryByRole('alert')).toBeNull()
 })
 

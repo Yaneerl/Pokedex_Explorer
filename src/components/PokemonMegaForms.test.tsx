@@ -155,7 +155,8 @@ test('switches Regular to Mega X/Y and back, updating all stats, types, abilitie
   expect(screen.getByText('90.5 kg')).toBeTruthy()
   expect(screen.getByRole('img', { name: 'charizard Normal artwork' }).getAttribute('src')).toBe('/artwork-6.png')
   const chain = await screen.findByRole('region', { name: 'Evolution Chain' })
-  await waitFor(() => expect(within(chain).getAllByRole('link').map((stage) => stage.textContent)).toEqual(['Charmander', 'Charmeleon', 'Charizard']))
+  await waitFor(() => expect(within(chain).getAllByRole('link').map((stage) => stage.getAttribute('aria-label'))).toEqual(['Charmander', 'Charmeleon', 'Charizard']))
+  expect(within(chain).getAllByRole('link').map((stage) => stage.getAttribute('href'))).toEqual(['/pokemon/4', '/pokemon/5', '/pokemon/6'])
   expect(within(chain).queryByText(/Mega/)).toBeNull()
 })
 
